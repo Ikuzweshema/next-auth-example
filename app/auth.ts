@@ -1,11 +1,11 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { findUserByCredentials } from "@/lib/actions";
-import {PrismaAdapter} from "@auth/prisma-adapter";
-import {prisma} from "@/lib/db/db";
-
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import { prisma } from "@/lib/db/db";
+import Github from "next-auth/providers/github";
 export const { signOut, signIn, auth, handlers } = NextAuth({
-  adapter:PrismaAdapter(prisma),
+  adapter: PrismaAdapter(prisma),
   providers: [
     Credentials({
       id: "credentials",
@@ -23,24 +23,27 @@ export const { signOut, signIn, auth, handlers } = NextAuth({
         return user;
       },
     }),
+    Github({
+      clientId: process.env.AUTH_GITHUB_ID,
+      clientSecret: process.env.AUTH_GITHUB_SECRET,
+    }),
   ],
-  session:{
-    strategy:"jwt"
+  session: {
+    strategy: "jwt",
   },
-  pages:{
-    signIn:"/auth/login",
+  pages: {
+    signIn: "/auth/login",
   },
   callbacks: {
-    authorized({ auth, request: { nextUrl } }) {
-      const isLoggedIn = !!auth?.user;
-      const isOnDashboard = nextUrl.pathname.startsWith('/dashboard');
-      if (isOnDashboard) {
-        if (isLoggedIn) return true;
-        return false; // Redirect unauthenticated users to login page
-      } else if (isLoggedIn) {
-        return Response.redirect(new URL('/dashboard', nextUrl));
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
       }
-      return true;
+      return token;
     },
-  }
+    async session({ token, session }) {
+      session.user.id = token.id;
+      return session;
+    },
+  },
 });
