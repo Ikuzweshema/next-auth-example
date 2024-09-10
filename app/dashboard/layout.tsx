@@ -1,5 +1,5 @@
 import React from "react";
-import { User } from "lucide-react";
+import  User  from "@/components/user";
 import Navbar from "@/components/nav-bar";
 
 export default function Layout({ children }: { children: React.ReactNode }) {

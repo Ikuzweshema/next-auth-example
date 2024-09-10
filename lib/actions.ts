@@ -4,6 +4,8 @@ import { AuthError } from "next-auth";
 import { LoginState, RegisterState, userSchema } from "@/lib/definitions";
 import { ZodError } from "zod";
 import { prisma } from "@/lib/db/db";
+import bcrypt from "bcryptjs";
+
 /**
  * Function Authenticate
  *
@@ -12,22 +14,18 @@ import { prisma } from "@/lib/db/db";
  * @return {LoginState} The Login status
  */
 export async function authenticate(
-  prevState: LoginState|undefined,
+  prevState: LoginState | undefined,
   formData: FormData,
 ): Promise<LoginState> {
-  const { email, password } = formData;
   try {
-    await signIn("credentials", {
-      email,
-      password,
-    });
+    await signIn("credentials", formData);
   } catch (e) {
     if (e instanceof AuthError) {
       switch (e.type) {
         case "CredentialsSignin":
           return {
-            status: "success",
-            message: "Login Successful",
+            status: "error",
+            message: "Invalid Credentials",
           };
         default:
           return {
@@ -40,12 +38,14 @@ export async function authenticate(
   }
 }
 
-export async function findUser(email: string, password: string) {
+export async function findUserByCredentials(email: string, password: string) {
   try {
-    const user = prisma.user.findFirst({
-      where: { email: email, password: password },
+    const user = await prisma.user.findUnique({
+      where: { email: email },
     });
     if (!user) return null;
+    const isMatch = await bcrypt.compare(password, user?.password);
+    if (!isMatch) return null;
     return user;
   } catch (e) {
     return null;
@@ -76,11 +76,12 @@ export async function addUser(
       };
     }
     const { email, password, name } = validate.data;
+    const hashed = await bcrypt.hash(password, 10);
     await prisma.user.create({
       data: {
         email: email,
         name: name,
-        password: password,
+        password: hashed,
       },
     });
     return {
