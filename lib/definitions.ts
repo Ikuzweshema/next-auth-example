@@ -42,4 +42,8 @@ export type RegisterState = {
   message: string;
   errors?: Errors;
 };
+export type MailStatus={
+  status: "success" | "error";
+  message: string;
+}
 export { LoginState, userSchema };

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/app/auth"; // Replace with your actual auth logic
+import { auth } from "@/app/auth";
 import {
   DEFAULT_REDIRECT_URL,
   authRoutes,
@@ -8,7 +8,7 @@ import {
 } from "@/routes";
 
 export default async function middleware(request: NextRequest) {
-  const session = await auth(); // Check session properly
+  const session = await auth();
   const { nextUrl } = request;
   const isLoggedIn = !!session?.user;
   const isApiRoute = nextUrl.pathname.startsWith(apiPrefix);
@@ -33,5 +33,5 @@ export default async function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|.*\\.png$).*)"],
+  matcher:"/dashboard/:path",
 };

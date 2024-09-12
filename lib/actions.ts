@@ -5,6 +5,8 @@ import { LoginState, RegisterState, userSchema } from "@/lib/definitions";
 import { ZodError } from "zod";
 import { prisma } from "@/lib/db/db";
 import bcrypt from "bcryptjs";
+import sendMail from "@/mail/mail";
+import generateToken from "@/lib/token";
 
 /**
  * Function Authenticate
@@ -15,7 +17,7 @@ import bcrypt from "bcryptjs";
  */
 export async function authenticate(
   prevState: LoginState | undefined,
-  formData: FormData,
+  formData: FormData
 ): Promise<LoginState> {
   try {
     await signIn("credentials", formData);
@@ -60,7 +62,7 @@ export async function findUserByCredentials(email: string, password: string) {
  */
 export async function addUser(
   prevSate: RegisterState | undefined,
-  formData: FormData,
+  formData: FormData
 ): Promise<RegisterState> {
   try {
     const validate = userSchema.safeParse({
@@ -77,17 +79,33 @@ export async function addUser(
     }
     const { email, password, name } = validate.data;
     const hashed = await bcrypt.hash(password, 10);
-    await prisma.user.create({
+    const newUser = await prisma.user.create({
       data: {
         email: email,
         name: name,
         password: hashed,
       },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+      },
     });
-    return {
-      status: "success",
-      message: "Registration completed",
-    };
+    const token = await generateToken();
+    await prisma.verificationToken.create({
+      data: {
+        userId: newUser.id,
+        token: token,
+        expires: new Date(Date.now() + 3600 * 1000),
+      },
+    });
+    return await sendMail(
+      email,
+      "Thanks For Registration to Next-Auth-Example",
+      "Please Confirm Your Email to continue to Next-Auth-Example",
+      name,
+      token
+    );
   } catch (e) {
     if (e instanceof ZodError) {
       return {
@@ -96,6 +114,56 @@ export async function addUser(
         errors: e.flatten().fieldErrors,
       };
     }
+    return {
+      status: "error",
+      message: e.message,
+    };
+  }
+}
+export async function verifyToken(token: string): Promise<LoginState> {
+  try {
+    const verificationToken = await prisma.verificationToken.findFirst({
+      where: { token: token },
+      select: {
+        userId: true,
+        token: true,
+        expires: true,
+      },
+    });
+    if (!verificationToken) {
+      return {
+        status: "error",
+        message: "Verification token not found",
+      };
+    }
+    const hasExpired =
+      new Date(Date.now()) > new Date(verificationToken.expires);
+    if (hasExpired) {
+      return {
+        status: "error",
+        message: "Token Expired Please get Anew One",
+      };
+    }
+
+    await prisma.user.update({
+      where: {
+        id: verificationToken.userId,
+      },
+      data: {
+        emailVerified: new Date(Date.now()),
+      },
+    });
+    await prisma.verificationToken.deleteMany({
+      where: {
+        userId: verificationToken.userId,
+      },
+    });
+
+    return {
+      status: "success",
+      message: "Email Verified Suceesfully, Please Login",
+    };
+  } catch (e: Error) {
     return {
       status: "error",
       message: e.message,
