@@ -33,6 +33,7 @@ export const { signOut, signIn, auth, handlers } = NextAuth({
   },
   pages: {
     signIn: "/auth/login",
+    error:"/auth/error"
   },
   callbacks: {
     async jwt({ token, user }) {
@@ -45,6 +46,14 @@ export const { signOut, signIn, auth, handlers } = NextAuth({
       session.user.id = token.id;
       return session;
     },
-    
+    async signIn({user,profile}){
+
+         return true
+    },
   },
+  // events:{
+  //   linkAccount({user,account}){
+  //
+  //   }
+  // }
 });

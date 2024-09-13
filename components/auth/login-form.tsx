@@ -13,9 +13,10 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CheckCheck, ShieldAlert } from "lucide-react";
 import {signIn} from "next-auth/react";
 export function LoginForm() {
+
   const [status, dispatch] = useFormState(authenticate, undefined);
   return (
-    <Card className="mx-auto w-96">
+    <Card className="mx-auto w-[34vw]">
       <CardHeader>
         <CardTitle className="text-2xl flex justify-center">
           <Image src={"/logo.png"} height={125} width={125} alt="logo" />

@@ -13,7 +13,7 @@ const publicRoutes = ["/"];
  * @type{string[]}
  */
 
-const authRoutes = ["/auth/login", "/auth/register"];
+const authRoutes = ["/auth/login", "/auth/register","/auth/error"];
 /**
  * The Route which are Responsible for authentication.
  * They are Api Routes

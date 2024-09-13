@@ -91,6 +91,7 @@ export async function addUser(
         name: true,
       },
     });
+     
     const token = await generateToken();
     await prisma.verificationToken.create({
       data: {
@@ -127,7 +128,7 @@ export async function verifyToken(token: string): Promise<LoginState> {
       select: {
         userId: true,
         token: true,
-        expires: true,
+        expires: true
       },
     });
     if (!verificationToken) {

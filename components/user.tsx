@@ -10,8 +10,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import {signOut, useSession} from "next-auth/react";
 
 export default function User() {
+  const session=useSession()
+
   return (
     <div className={"flex flex-col"}>
       <DropdownMenu>
@@ -22,7 +25,7 @@ export default function User() {
             className="overflow-hidden rounded-full"
           >
             <Image
-              src="https://i.pravatar.cc/150?u=a04258114e29026702d"
+              src={`${session.data?.user?.image||"https://i.pravatar.cc"}`}
               width={36}
               height={36}
               alt="Avatar"
@@ -31,7 +34,7 @@ export default function User() {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Shema</DropdownMenuLabel>
+          <DropdownMenuLabel>{session.data?.user?.name}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem>
             <Link href={"/dashboard/profile"}>Profile</Link>
@@ -39,7 +42,7 @@ export default function User() {
           <DropdownMenuItem>Settings</DropdownMenuItem>
           <DropdownMenuItem>Support</DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem></DropdownMenuItem>
+          <DropdownMenuItem><Button onClick={()=>signOut()} variant={"link"}>Logout</Button> </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
