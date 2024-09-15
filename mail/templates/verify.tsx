@@ -1,3 +1,4 @@
+"use client"
 import React from "react";
 import {
   Body,
@@ -9,8 +10,8 @@ import {
   Link,
   Preview,
   Text,
+  Button,
 } from "@react-email/components";
-import { Button } from "@/components/ui/button";
 
 interface EmailTemplateProps {
   username: string;

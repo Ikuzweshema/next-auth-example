@@ -6,7 +6,7 @@ export default async function middleware(request: NextRequest) {
   const session = await auth();
   const { nextUrl } = request;
   const isLoggedIn = !!session?.user;
-
+  const isOnDashboard = nextUrl.pathname.startsWith("/dashboard");
   const isApiRoute = nextUrl.pathname.startsWith(apiPrefix);
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
 
@@ -17,6 +17,9 @@ export default async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL(DEFAULT_REDIRECT_URL, request.url));
     }
     return NextResponse.next();
+  }
+  if (isOnDashboard && !isLoggedIn) {
+    return NextResponse.redirect(new URL("/auth/login", request.nextUrl));
   }
 
   return NextResponse.next();
