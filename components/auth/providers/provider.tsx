@@ -3,11 +3,12 @@
 import { Button } from "@/components/ui/button";
 import { useFormState, useFormStatus } from "react-dom";
 import signInWithProvider from "@/lib/actions";
-import { ReloadIcon } from "@radix-ui/react-icons";
+import { ReloadIcon, GitHubLogoIcon } from "@radix-ui/react-icons";
 import AlertMessage from "@/components/auth/alert";
+import Image from "next/image";
 
 type ProviderProps = {
-  name: string;
+  name: "Google" | "Github";
 };
 export default function Provider({ name }: ProviderProps) {
   const [status, dispatch] = useFormState(signInWithProvider, undefined);
@@ -28,11 +29,16 @@ function SubmitButton({ name }: { name: string }) {
     <Button
       disabled={pending}
       variant="outline"
-      className={"w-full"}
+      className={"w-full flex gap-2"}
       type={"submit"}
     >
-      {pending && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />} Login
-      with {name}
+      {pending && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}{" "}
+      {name === "Google" ? (
+        <Image src={"/Google.png"} width={22} alt={"google"} height={22} />
+      ) : (
+        <GitHubLogoIcon />
+      )}
+      Continue with {name}
     </Button>
   );
 }

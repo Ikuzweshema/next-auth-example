@@ -282,7 +282,7 @@ export async function getUserByAndResend(
       userId: true,
     },
   });
-  if (!userId) {
+  if (!verificationToken) {
     return {
       status: "error",
       message: "No user found",

@@ -19,7 +19,7 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   title: {
     default: "Next-Auth-Example",
-    template: "%s/Next-Auth-Example",
+    template: "%s-Next-Auth-Example",
   },
   description: "Example Of Authentication in next js using Next-auth",
 };

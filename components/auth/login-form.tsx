@@ -9,8 +9,6 @@ import Image from "next/image";
 import { useFormStatus, useFormState } from "react-dom";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { authenticate } from "@/lib/actions";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { CheckCheck, ShieldAlert } from "lucide-react";
 import Providers from "@/components/auth/providers";
 import AlertMessage from "@/components/auth/alert";
 export function LoginForm() {
@@ -71,7 +69,7 @@ function SubmitButton() {
       type="submit"
       className="w-full disabled:cursor-not-allowed"
     >
-      {pending && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}{" "}
+      {pending && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}
       {pending ? "LoggingIn..." : "Login"}
     </Button>
   );

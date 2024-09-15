@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {  ShieldEllipsis } from "lucide-react";
+import { ShieldEllipsis } from "lucide-react";
 import { useFormState, useFormStatus } from "react-dom";
 import { getUserByAndResend } from "@/lib/actions";
 import AlertMessage from "@/components/auth/alert";
@@ -14,11 +14,7 @@ export default function ResendForm({ token }: { token: string }) {
         <input type={"hidden"} name={"token"} value={token} />
         <SubmitButton />
       </form>
-      {status?.status ? (
-       <AlertMessage {...status}/>
-      ) : (
-        ""
-      )}
+      {status?.status && <AlertMessage {...status} />}
     </div>
   );
 }

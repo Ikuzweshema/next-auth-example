@@ -8,8 +8,6 @@ import { Label } from "@/components/ui/label";
 import Image from "next/image";
 import { addUser } from "@/lib/actions";
 import { ReloadIcon } from "@radix-ui/react-icons";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { CheckCheck, ShieldAlert } from "lucide-react";
 import Providers from "@/components/auth/providers";
 import AlertMessage from "@/components/auth/alert";
 
