@@ -1,6 +1,5 @@
 "use server";
 import sendGrid from "@sendgrid/mail";
-import React from "react";
 import { MailStatus } from "@/lib/definitions";
 import { render } from "@react-email/render";
 sendGrid.setApiKey(process.env.SEND_GRID_API_KEY);
@@ -23,7 +22,9 @@ export default async function sendMail(
   username: string,
   verificationToken: string,
 ): Promise<MailStatus> {
-  const html = await render(EmailTemplate({ username, verificationToken }));
+  const html = await render(
+    <EmailTemplate username={username} verificationToken={verificationToken} />,
+  );
   try {
     await sendGrid.send({
       to: to,

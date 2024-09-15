@@ -1,14 +1,26 @@
 import { z } from "zod";
+
+/**
+ * The login Status
+ * @property {string} success|error The login status
+ */
+type Status = "success" | "error";
 /**
  * Login status
- * @property {"sucess"|"error"} status login status
+ * @property {Status} status login status
  * @property {string} message login message
  */
-type LoginState = {
-  status: "success" | "error";
+type AuthStatus = {
+  status: Status;
   message: string;
 };
-
+/**
+ * The zod schema  of User
+ *
+ * @property {string} email The user's Email
+ * @property {string} name  The user's Names
+ * @property {string} password The user's Password
+ */
 const userSchema = z.object({
   email: z.string().email({
     message: "This has to be an email",
@@ -33,17 +45,22 @@ type Errors = {
 
 /**
  * The registration status
- * @property {"sucess"|"error"} status the status of registration
+ * @property {Status} status the status of registration
  * @property {string} message the message of the registration
  * @property {Errors} Errors   Error Messages
  */
-export type RegisterState = {
-  status: "success" | "error";
+type RegisterState = {
+  status: Status;
   message: string;
   errors?: Errors;
 };
-export type MailStatus={
-  status: "success" | "error";
+/**
+ * The Mail status
+ * @property {AuthStatus} status The sending mail status
+ * @property {string} message The sending mail status
+ */
+type MailStatus = {
+  status: AuthStatus;
   message: string;
-}
-export { LoginState, userSchema };
+};
+export { AuthStatus, userSchema, MailStatus, RegisterState };

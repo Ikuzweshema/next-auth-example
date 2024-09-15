@@ -11,20 +11,20 @@ import { ReloadIcon } from "@radix-ui/react-icons";
 import { authenticate } from "@/lib/actions";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CheckCheck, ShieldAlert } from "lucide-react";
-import {signIn} from "next-auth/react";
+import Providers from "@/components/auth/providers";
+import AlertMessage from "@/components/auth/alert";
 export function LoginForm() {
-
   const [status, dispatch] = useFormState(authenticate, undefined);
   return (
-    <Card className="mx-auto w-[34vw]">
+    <Card className="mx-auto w-96">
       <CardHeader>
         <CardTitle className="text-2xl flex justify-center">
           <Image src={"/logo.png"} height={125} width={125} alt="logo" />
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <form action={dispatch}>
-          <div className="grid gap-4">
+        <div className="grid gap-4">
+          <form action={dispatch} className={"flex flex-col gap-4"}>
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -48,39 +48,17 @@ export function LoginForm() {
               <Input id="password" type="password" name={"password"} required />
             </div>
             <SubmitButton />
-            {status?.status ? (
-              <Alert
-                variant={status?.status === "error" ? "destructive" : "default"}
-                className={status.status === "success" ? "bg-green-700" : ""}
-              >
-                <AlertDescription className={"flex gap-2"}>
-                  {status?.status === "error" ? (
-                    <ShieldAlert />
-                  ) : (
-                    <CheckCheck />
-                  )}{" "}
-                  {status?.message}
-                </AlertDescription>
-              </Alert>
-            ) : (
-              ""
-            )}
-            <div className=" flex gap-1">
-              <Button variant="outline" className="w-full">
-                Login with Google
-              </Button>
-              <Button variant="outline" type={"button"} onClick={()=> signIn("github")} className="w-full">
-                Login with Github
-              </Button>
-            </div>
-          </div>
-          <div className="mt-4 text-center text-sm">
-            Don&apos;t have an account?{" "}
-            <Link href="/auth/register" className="underline">
-              Sign up
-            </Link>
-          </div>
-        </form>
+            {status?.status && <AlertMessage {...status} />}
+          </form>
+          <Providers />
+        </div>
+
+        <div className="mt-4 text-center text-sm">
+          Don&apos;t have an account?{" "}
+          <Link href="/auth/register" className="underline">
+            Sign up
+          </Link>
+        </div>
       </CardContent>
     </Card>
   );

@@ -10,6 +10,8 @@ import { addUser } from "@/lib/actions";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CheckCheck, ShieldAlert } from "lucide-react";
+import Providers from "@/components/auth/providers";
+import AlertMessage from "@/components/auth/alert";
 
 export function RegisterForm() {
   const [status, dispatch] = useFormState(addUser, undefined);
@@ -21,8 +23,8 @@ export function RegisterForm() {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <form action={dispatch}>
-          <div className="grid gap-4">
+        <div className="grid gap-4">
+          <form action={dispatch} className={"flex flex-col gap-4"}>
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -70,40 +72,16 @@ export function RegisterForm() {
               ))}
 
             <SubmitButton />
-            {status?.status ? (
-              <Alert
-                variant={status?.status === "error" ? "destructive" : "default"}
-                className={status.status === "success" ? "bg-green-700" : ""}
-              >
-                <AlertDescription className={"flex gap-2"}>
-                  {status?.status === "error" ? (
-                    <ShieldAlert />
-                  ) : (
-                    <CheckCheck />
-                  )}{" "}
-                  {status?.message}
-                </AlertDescription>
-              </Alert>
-            ) : (
-              ""
-            )}
-
-            <div className=" flex gap-1">
-              <Button variant="outline" className="w-full">
-                Continue with Google
-              </Button>
-              <Button variant="outline" className="w-full">
-                Continue with Github
-              </Button>
-            </div>
-          </div>
-          <div className="mt-4 text-center text-sm">
-            Don&apos;t have an account?{" "}
-            <Link href="/auth/login" className="underline">
-              Login
-            </Link>
-          </div>
-        </form>
+            {status?.status && <AlertMessage {...status} />}
+          </form>
+          <Providers />
+        </div>
+        <div className="mt-4 text-center text-sm">
+          Don&apos;t have an account?{" "}
+          <Link href="/auth/login" className="underline">
+            Login
+          </Link>
+        </div>
       </CardContent>
     </Card>
   );
@@ -111,7 +89,11 @@ export function RegisterForm() {
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
-    <Button disabled={pending} type="submit" className="w-full disabled:cursor-not-allowed">
+    <Button
+      disabled={pending}
+      type="submit"
+      className="w-full disabled:cursor-not-allowed"
+    >
       {pending && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}{" "}
       {pending ? "Registering..." : "Register"}
     </Button>

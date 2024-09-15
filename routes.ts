@@ -5,15 +5,12 @@
  * @type{string[]}
  */
 
-const publicRoutes = ["/"];
-/**
- * The Route which are Used In authentication
- * They are public Authentication Routes
- * For login and registration forms
- * @type{string[]}
- */
-
-const authRoutes = ["/auth/login", "/auth/register","/auth/error"];
+const authRoutes = [
+  "/auth/login",
+  "/auth/register",
+  "/auth/error",
+  "/auth/:token/verify",
+];
 /**
  * The Route which are Responsible for authentication.
  * They are Api Routes
@@ -31,4 +28,4 @@ const apiPrefix = "/api/auth";
  */
 const DEFAULT_REDIRECT_URL = "/dashboard";
 
-export { DEFAULT_REDIRECT_URL, apiPrefix, authRoutes, publicRoutes };
+export { DEFAULT_REDIRECT_URL, apiPrefix, authRoutes };

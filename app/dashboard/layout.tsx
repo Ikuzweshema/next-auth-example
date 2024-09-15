@@ -1,6 +1,6 @@
 import React from "react";
-import  User  from "@/components/user";
-import Navbar from "@/components/nav-bar";
+import  User  from "@/components/navbar/user";
+import Navbar from "@/components/navbar";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
