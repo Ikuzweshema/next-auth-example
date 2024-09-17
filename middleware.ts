@@ -9,21 +9,15 @@ export default async function middleware(request: NextRequest) {
   const isOnDashboard = nextUrl.pathname.startsWith("/dashboard");
   const isApiRoute = nextUrl.pathname.startsWith(apiPrefix);
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
-
-  if (isApiRoute) return NextResponse.next();
-
-  if (isAuthRoute) {
-    if (isLoggedIn) {
-      return NextResponse.redirect(new URL(DEFAULT_REDIRECT_URL, request.url));
-    }
-    return NextResponse.next();
-  }
-  if (isOnDashboard && !isLoggedIn) {
-    return NextResponse.redirect(new URL("/auth/login", request.nextUrl));
-  }
-
-  return NextResponse.next();
+   console.log(isLoggedIn)
+   if (isOnDashboard && !isLoggedIn) {
+    
+   return NextResponse.redirect(new URL("/auth/login",nextUrl))
+}
+if (isAuthRoute && isLoggedIn) {
+      return NextResponse.redirect(new URL(DEFAULT_REDIRECT_URL,nextUrl))
+}
 }
 export const config = {
   matcher: ["/((?!api|_next/static|_next/image|.*\\.png$).*)"],
-};
+}

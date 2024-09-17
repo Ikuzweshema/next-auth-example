@@ -43,6 +43,7 @@ export default function RootLayout({
           >
             {" "}
             {children}
+           
           </ThemeProvider>
         </SessionProvider>
       </body>

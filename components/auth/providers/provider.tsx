@@ -15,7 +15,7 @@ export default function Provider({ name }: ProviderProps) {
   return (
     <div className="grid gap-2 w-full">
       <form action={dispatch}>
-        <input type={"hidden"} name={"provider"} value={name} />
+        <input type={"hidden"} name={"provider"} value={name.toLocaleLowerCase()} />
         <SubmitButton name={name} />
       </form>
       {status?.status && <AlertMessage {...status} />}
