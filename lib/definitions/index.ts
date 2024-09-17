@@ -56,11 +56,11 @@ type RegisterState = {
 };
 /**
  * The Mail status
- * @property {AuthStatus} status The sending mail status
+ * @property {Status} status The sending mail status
  * @property {string} message The sending mail status
  */
 type MailStatus = {
-  status: AuthStatus;
+  status: Status;
   message: string;
 };
 export { AuthStatus, userSchema, MailStatus, RegisterState };

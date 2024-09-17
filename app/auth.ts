@@ -16,7 +16,7 @@ export const { signOut, signIn, auth, handlers } = NextAuth({
         email: {},
         password: {},
       },
-      authorize: async (credentials) => {
+      authorize: async (credentials:{email:string,password:string}) => {
         const { email, password } = credentials;
 
         const user = await findUserByCredentials(email, password);

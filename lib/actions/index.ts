@@ -195,7 +195,7 @@ export default async function signInWithProvider(
 ): Promise<AuthStatus> {
   try {
     const provider: BuiltInProviderType | undefined = formData.get("provider");
-    await signIn("google");
+    await signIn(provider);
     return {
       status: "success",
       message: "login successfully",
@@ -236,7 +236,7 @@ async function sendVerificationToken({
   id: string;
   email: string;
   name: string;
-}): Promise<LoginState> {
+}): Promise<AuthStatus> {
   const token = await generateToken();
   await prisma.verificationToken.create({
     data: {
