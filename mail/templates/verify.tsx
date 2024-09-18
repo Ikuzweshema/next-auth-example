@@ -1,4 +1,16 @@
-"use client";
+import React from "react";
+import {
+  Body,
+  Container,
+  Head,
+  Heading,
+  Html,
+  Img,
+  Link,
+  Preview,
+  Text,
+} from "@react-email/components";
+import { Button } from "@/components/ui/button";
 
 interface EmailTemplateProps {
   username: string;
@@ -10,55 +22,82 @@ export default function EmailTemplate({
   verificationToken,
 }: EmailTemplateProps) {
   return (
-    <div
-      style={{
-        fontFamily: "Arial, sans-serif",
-        maxWidth: "600px",
-        margin: "0 auto",
-        padding: "20px",
-        border: "1px solid #e0e0e0",
-        backgroundColor: "#f9f9f9",
-        borderRadius: "10px",
-      }}
-    >
-      <div style={{ textAlign: "center" }}>
-        <img
-          src="https://express-auth-app.vercel.app/logo.png"
-          alt="next-auth-logo"
-          style={{ width: "100px", marginBottom: "20px" }}
-        />
-      </div>
-
-      {/* Welcome Message */}
-      <h1 style={{ color: "#333" }}>Welcome, {username}!</h1>
-      <p style={{ color: "#555" }}>
-        Thank you for Registration ,To Continue, please verify your email
-        address.
-      </p>
-
-      {/* Verification Button */}
-      <div style={{ textAlign: "center", margin: "20px 0" }}>
-        <a
-          href={`${process.env.BASE_URL}/auth/${verificationToken}/verify`}
-          target="_blank"
-          style={{
-            display: "inline-block",
-            padding: "10px 20px",
-            backgroundColor: "#007bff",
-            color: "#ffffff",
-            textDecoration: "none",
-            borderRadius: "5px",
-          }}
-        >
-          Verify Email Address
-        </a>
-      </div>
-
-      {/* Footer Section */}
-      <p style={{ color: "#777", fontSize: "12px" }}>
-        If you did not create an account, please ignore this email or contact
-        support.
-      </p>
-    </div>
+    <Html>
+      <Head />
+      <Preview>Verify your email address</Preview>
+      <Body style={main}>
+        <Container style={container}>
+          <Img
+            src={"https://express-auth-app.vercel.app/logo.png"}
+            width="150"
+            height="100"
+            alt="Your App Logo"
+            style={logo}
+          />
+          <Heading as="h1" style={h1}>
+            Verify Your Email Address
+          </Heading>
+          <Text style={text}>Hello {username},</Text>
+          <Text style={text}>
+            Thank you for signing up! To complete your registration and start
+            using our app, please verify your email address by clicking the
+            button below:
+          </Text>
+          <Button asChild>
+            <Link
+              href={`${process.env.BASE_URL}/auth/${verificationToken}/verify`}
+              target="_blank"
+              style={{
+                display: "inline-block",
+                textDecoration: "none",
+              }}
+            >
+              Verify Email Address
+            </Link>
+          </Button>
+          <Text style={text}>
+            If you didn't create an account, you can safely ignore this email.
+          </Text>
+          <Text style={{ ...text, marginTop: "14px" }}>
+            Best regards,
+            <br />
+            The Next Auth Example Team
+          </Text>
+        </Container>
+      </Body>
+    </Html>
   );
 }
+
+const main = {
+  backgroundColor: "hsl(var(--background))",
+  fontFamily: "var(--font-sans)",
+};
+
+const container = {
+  margin: "0 auto",
+  padding: "20px 0 48px",
+  width: "560px",
+};
+
+const logo = {
+  margin: "0 auto",
+};
+
+const h1 = {
+  color: "hsl(var(--foreground))",
+  fontSize: "24px",
+  fontWeight: "700",
+  lineHeight: "40px",
+  letterSpacing: "-0.5px",
+  margin: "48px 0",
+  padding: "0",
+  textAlign: "center" as const,
+};
+
+const text = {
+  color: "hsl(var(--foreground))",
+  fontSize: "14px",
+  lineHeight: "24px",
+  margin: "0 0 24px",
+};

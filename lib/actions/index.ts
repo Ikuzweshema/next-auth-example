@@ -8,7 +8,8 @@ import bcrypt from "bcryptjs";
 import sendMail from "@/mail/send";
 import generateToken from "@/lib/token";
 import { BuiltInProviderType } from "@auth/core/providers";
-import { Prisma } from "@prisma/client";
+import { Prisma} from "@prisma/client";
+
 /**
  * Function Authenticate
  *
@@ -18,7 +19,7 @@ import { Prisma } from "@prisma/client";
  */
 export async function authenticate(
   prevState: AuthStatus | undefined,
-  formData: FormData,
+  formData: FormData
 ): Promise<AuthStatus> {
   const email = formData.get("email");
   try {
@@ -78,7 +79,7 @@ export async function findUserByCredentials(email: string, password: string) {
  */
 export async function addUser(
   prevSate: RegisterState | undefined,
-  formData: FormData,
+  formData: FormData
 ): Promise<RegisterState> {
   try {
     const validate = userSchema.safeParse({
@@ -191,7 +192,7 @@ export async function verifyToken(token: string): Promise<AuthStatus> {
 }
 export default async function signInWithProvider(
   prevState: AuthStatus | undefined,
-  formData: FormData,
+  formData: FormData
 ): Promise<AuthStatus> {
   try {
     const provider: BuiltInProviderType | undefined = formData.get("provider");
@@ -250,7 +251,7 @@ async function sendVerificationToken({
     "Thanks For Registration to Next-Auth-Example",
     "Please Confirm Your Email to continue to Next-Auth-Example",
     name,
-    token,
+    token
   );
 }
 async function resendVerificationToken({
@@ -261,7 +262,7 @@ async function resendVerificationToken({
   id: string;
   email: string;
   name: string;
-}) {
+}): Promise<AuthStatus> {
   await prisma.verificationToken.deleteMany({
     where: {
       userId: id,
@@ -271,7 +272,7 @@ async function resendVerificationToken({
 }
 export async function getUserByAndResend(
   prevState: AuthStatus | undefined,
-  formData: FormData,
+  formData: FormData
 ): Promise<AuthStatus> {
   const token = formData.get("token");
   const verificationToken = await prisma.verificationToken.findFirst({

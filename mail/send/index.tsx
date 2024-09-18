@@ -21,9 +21,11 @@ export default async function sendMail(
   subject: string,
   text: string,
   username: string,
-  verificationToken: string,
+  verificationToken: string
 ): Promise<MailStatus> {
-  const html = await render(EmailTemplate({ username, verificationToken }));
+  const html = await render(
+    <EmailTemplate username={username} verificationToken={verificationToken} />
+  );
 
   try {
     await sendGrid.send({

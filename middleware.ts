@@ -9,7 +9,6 @@ export default async function middleware(request: NextRequest) {
   const isOnDashboard = nextUrl.pathname.startsWith("/dashboard");
   const isApiRoute = nextUrl.pathname.startsWith(apiPrefix);
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
-   console.log(isLoggedIn)
    if (isOnDashboard && !isLoggedIn) {
     
    return NextResponse.redirect(new URL("/auth/login",nextUrl))
