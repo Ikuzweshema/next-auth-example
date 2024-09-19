@@ -19,4 +19,7 @@ if (isAuthRoute && isLoggedIn) {
 }
 export const config = {
   matcher: ["/((?!api|_next/static|_next/image|.*\\.png$).*)"],
+   unstable_allowDynamic: [
+    "**/node_modules/.pnpm/@react-email+tailwind@0.0.15_react@18.2.0/**", 
+  ],
 }
