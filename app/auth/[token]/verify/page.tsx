@@ -23,7 +23,9 @@ export default async function Page({ params }: { params: { token: string } }) {
               variant={status.status === "success" ? "default" : "destructive"}
             >
               <AlertTitle
-                className={`${status.status === "success" ? "bg-green-600" : ""}  rounded-md flex justify-center`}
+                className={`${
+                  status.status === "success" ? "bg-green-600" : ""
+                }  rounded-md flex justify-center`}
               >
                 {status.status === "success" ? (
                   <CheckCheck size={80} />

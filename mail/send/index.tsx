@@ -39,11 +39,10 @@ export default async function sendMail(
       status: "success",
       message: "Please verify your email.",
     };
-  } catch (e: Error) {
-    console.error("Error sending email:", e.message);
+  } catch (e) {
     return {
       status: "error",
-      message: e.message,
+      message:"Email not sent",
     };
   }
 }

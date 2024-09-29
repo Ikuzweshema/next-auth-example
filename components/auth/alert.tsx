@@ -6,7 +6,7 @@ export default function AlertMessage(status: AuthStatus) {
   return (
     <Alert
       variant={status.status === "success" ? "default" : "destructive"}
-      className={`mt-3 ${status.status === "success" ? "bg-green-500" : ""}`}
+      className={`mt-3 ${status.status === "success" ? "bg-green-600" : ""}`}
     >
       <AlertDescription className={" flex justify-center"}>
         <span className={"text-md flex gap-2"}>

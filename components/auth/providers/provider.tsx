@@ -33,7 +33,7 @@ function SubmitButton({ name }: { name: string }) {
       className={"w-full flex gap-2"}
       type={"submit"}
     >
-      {pending && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}{" "}
+      {pending && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
       {name === "google" ? (
         <Image src={"/Google.png"} width={22} alt={"google"} height={22} />
       ) : (

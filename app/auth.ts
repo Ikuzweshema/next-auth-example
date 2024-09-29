@@ -16,10 +16,13 @@ export const { signOut, signIn, auth, handlers } = NextAuth({
         email: {},
         password: {},
       },
-      authorize: async (credentials:{email:string,password:string}) => {
+      authorize: async (credentials) => {
         const { email, password } = credentials;
 
-        const user = await findUserByCredentials(email, password);
+        const user = await findUserByCredentials(
+          email as string,
+          password as string
+        );
         if (!user) return null;
         return user;
       },
@@ -43,14 +46,17 @@ export const { signOut, signIn, auth, handlers } = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
+        token.sub = user.id;
         token.emailVerified = user.emailVerified;
       }
       return token;
     },
     async session({ token, session }) {
-      session.user.id = token.id;
-      session.user.emailVerified = token.emailVerified;
+      if (token.sub && session.user) {
+        session.user.id = token.sub;
+        session.user.emailVerified = token.emailVerified as Date | null;
+      }
+
       return session;
     },
     async signIn({ user, account }) {

@@ -1,7 +1,12 @@
 "use server";
 import { signIn } from "@/app/auth";
 import { AuthError } from "next-auth";
-import { AuthStatus, RegisterState, userSchema } from "@/lib/definitions";
+import {
+  AuthStatus,
+  RegisterState,
+  userSchema,
+  verificationToken,
+} from "@/lib/definitions";
 import { ZodError } from "zod";
 import { prisma } from "@/lib/db/db";
 import bcrypt from "bcryptjs";
@@ -10,24 +15,17 @@ import generateToken from "@/lib/token";
 import { BuiltInProviderType } from "@auth/core/providers";
 import { Prisma } from "@prisma/client";
 
-/**
- * Function Authenticate
- *
- * @param prevState The Previous login status
- * @param formData The formData from submitted form
- * @return {AuthStatus} The Login status
- */
 export async function authenticate(
   prevState: AuthStatus | undefined,
   formData: FormData
 ): Promise<AuthStatus> {
-  const email = formData.get("email");
+  const email = formData.get("email") as string;
   try {
     await signIn("credentials", formData);
     return {
-      status:"success",
-      message:"login sucessfully"
-    }
+      status: "success",
+      message: "login sucessfully",
+    };
   } catch (e) {
     if (e instanceof AuthError) {
       switch (e.type) {
@@ -45,9 +43,9 @@ export async function authenticate(
             };
           }
           return resendVerificationToken({
-            id: user.id,
-            name: user.name,
-            email: user.email,
+            id: user.id as string,
+            name: user.name as string,
+            email: user.email as string,
           });
 
         default:
@@ -67,7 +65,7 @@ export async function findUserByCredentials(email: string, password: string) {
       where: { email: email },
     });
     if (!user) return null;
-    const isMatch = await bcrypt.compare(password, user?.password);
+    const isMatch = await bcrypt.compare(password, user.password as string);
     if (!isMatch) return null;
     return user;
   } catch (e) {
@@ -75,12 +73,6 @@ export async function findUserByCredentials(email: string, password: string) {
   }
 }
 
-/**
- *
- * @param prevSate The registration status
- * @param formData  The  data from the form
- * @return{RegisterState} the status of registration process
- */
 export async function addUser(
   prevSate: RegisterState | undefined,
   formData: FormData
@@ -126,7 +118,7 @@ export async function addUser(
       };
     }
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      if (e.code === "P2002" && e.meta?.target?.includes("email")) {
+      if (e.code === "P2002") {
         return {
           status: "error",
           message: "Email already exists",
@@ -134,16 +126,17 @@ export async function addUser(
       } else {
         return {
           status: "error",
-          message: "Database error",
+          message: e.message,
         };
       }
     }
     return {
       status: "error",
-      message: e.message,
+      message: "Something Went wrong",
     };
   }
 }
+
 export async function verifyToken(token: string): Promise<AuthStatus> {
   try {
     const verificationToken = await prisma.verificationToken.findFirst({
@@ -187,25 +180,32 @@ export async function verifyToken(token: string): Promise<AuthStatus> {
       status: "success",
       message: "Email Verified Successfully, Please Login",
     };
-  } catch (e: Error) {
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      return {
+        status: "error",
+        message: e.message,
+      };
+    }
     return {
+      message: "something Went wrong",
       status: "error",
-      message: e.message,
     };
   }
 }
+
 export default async function signInWithProvider(
   prevState: AuthStatus | undefined,
   formData: FormData
 ): Promise<AuthStatus> {
   try {
-    const provider: BuiltInProviderType | undefined = formData.get("provider");
+    const provider = formData.get("provider") as BuiltInProviderType;
     await signIn(provider);
     return {
       status: "success",
       message: "login successfully",
     };
-  } catch (e: Error) {
+  } catch (e) {
     if (e instanceof AuthError) {
       switch (e.type) {
         case "OAuthCallbackError":
@@ -223,7 +223,9 @@ export default async function signInWithProvider(
     throw e;
   }
 }
-async function findUserByEmail(email: string):Promise<Prisma.UserCreateInput|null> {
+async function findUserByEmail(
+  email: string
+): Promise<Prisma.UserCreateInput | null> {
   const user = await prisma.user.findFirst({
     where: {
       email: email,
@@ -233,14 +235,15 @@ async function findUserByEmail(email: string):Promise<Prisma.UserCreateInput|nul
 
   return user;
 }
+
 async function sendVerificationToken({
   id,
   email,
   name,
 }: {
   id: string;
-  email: string;
-  name: string;
+  email: string | null;
+  name: string | null;
 }): Promise<AuthStatus> {
   const token = await generateToken();
   await prisma.verificationToken.create({
@@ -251,21 +254,22 @@ async function sendVerificationToken({
     },
   });
   return await sendMail(
-    email,
+    email || "",
     "Thanks For Registration to Next-Auth-Example",
     "Please Confirm Your Email to continue to Next-Auth-Example",
-    name,
+    name || "",
     token
   );
 }
+
 async function resendVerificationToken({
   id,
   email,
   name,
 }: {
   id: string;
-  email: string;
-  name: string;
+  email: string | null;
+  name: string | null;
 }): Promise<AuthStatus> {
   await prisma.verificationToken.deleteMany({
     where: {
@@ -274,19 +278,30 @@ async function resendVerificationToken({
   });
   return await sendVerificationToken({ id, name, email });
 }
-export async function getUserByAndResend(
-  prevState: AuthStatus | undefined,
-  formData: FormData
-): Promise<AuthStatus> {
-  const token = formData.get("token");
+
+async function getTokenByToken(
+  token: string | null
+): Promise<verificationToken | null> {
+  if (!token) {
+    return null;
+  }
   const verificationToken = await prisma.verificationToken.findFirst({
     where: {
       token: token,
     },
-    select: {
-      userId: true,
-    },
   });
+  if (!verificationToken) {
+    return null;
+  }
+  return verificationToken;
+}
+
+export async function getUserByAndResend(
+  prevState: AuthStatus | undefined,
+  formData: FormData
+): Promise<AuthStatus> {
+  const token = formData.get("token") as string | null;
+  const verificationToken = await getTokenByToken(token);
   if (!verificationToken) {
     return {
       status: "error",
@@ -304,5 +319,9 @@ export async function getUserByAndResend(
       message: "User not found",
     };
   }
-  return await resendVerificationToken({ id: user.id, email: user.email });
+  return await resendVerificationToken({
+    email: user.email,
+    id: user.id,
+    name: user.name,
+  });
 }

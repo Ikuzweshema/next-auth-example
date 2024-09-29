@@ -10,7 +10,7 @@ type Status = "success" | "error";
  * @property {Status} status login status
  * @property {string} message login message
  */
-type AuthStatus = {
+export type AuthStatus = {
   status: Status;
   message: string;
 };
@@ -21,7 +21,7 @@ type AuthStatus = {
  * @property {string} name  The user's Names
  * @property {string} password The user's Password
  */
-const userSchema = z.object({
+export const userSchema = z.object({
   email: z.string().email({
     message: "This has to be an email",
   }),
@@ -49,7 +49,7 @@ type Errors = {
  * @property {string} message the message of the registration
  * @property {Errors} Errors   Error Messages
  */
-type RegisterState = {
+export type RegisterState = {
   status: Status;
   message: string;
   errors?: Errors;
@@ -59,8 +59,21 @@ type RegisterState = {
  * @property {Status} status The sending mail status
  * @property {string} message The sending mail status
  */
-type MailStatus = {
+export type MailStatus = {
   status: Status;
   message: string;
 };
-export { AuthStatus, userSchema, MailStatus, RegisterState };
+
+/**
+ * Type Verification token
+ * @property {string} UserId The Verification token's userId
+ * @property {string}  Id    The Vefificationtoken Id
+ * @property {token}  Token   The Vefificationtoken
+ * @property {Date}   Expires  The Time The token Expires
+ */
+export type verificationToken = {
+  userId: string;
+  id: string;
+  token: string;
+  expires: Date;
+};

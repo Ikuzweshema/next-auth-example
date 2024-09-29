@@ -69,7 +69,7 @@ function SubmitButton() {
       type="submit"
       className="w-full disabled:cursor-not-allowed"
     >
-      {pending && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}
+      {pending && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
       {pending ? "LoggingIn..." : "Login"}
     </Button>
   );

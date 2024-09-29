@@ -11,14 +11,6 @@ const authRoutes = [
   "/auth/error",
   "/auth/:token/verify",
 ];
-/**
- * The Route which are Responsible for authentication.
- * They are Api Routes
- * such as /api/auth/signin
- * @type{string}
- */
-
-const apiPrefix = "/api/auth";
 
 /**
  * The Route which For authenticated Users.
@@ -28,4 +20,4 @@ const apiPrefix = "/api/auth";
  */
 const DEFAULT_REDIRECT_URL = "/dashboard";
 
-export { DEFAULT_REDIRECT_URL, apiPrefix, authRoutes };
+export { DEFAULT_REDIRECT_URL, authRoutes };

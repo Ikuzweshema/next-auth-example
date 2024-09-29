@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@auth/core':
+        specifier: ^0.35.3
+        version: 0.35.3
       '@auth/prisma-adapter':
         specifier: ^2.4.2
         version: 2.5.3(@prisma/client@5.20.0(prisma@5.20.0))

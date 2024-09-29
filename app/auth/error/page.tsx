@@ -2,10 +2,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ShieldAlert } from "lucide-react";
-import {Button} from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
-export default async function Page({searchParams}:{searchParams:{error:string}}) {
-    const {error}=searchParams
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: { error: string };
+}) {
+  const { error } = searchParams;
   return (
     <Card className="mx-auto w-[45vw]  mt-24">
       <CardHeader>
@@ -22,12 +26,14 @@ export default async function Page({searchParams}:{searchParams:{error:string}})
                   <ShieldAlert size={60} />
                 </AlertTitle>
                 <AlertDescription className={"mt-3 flex justify-center"}>
-                  <span className={"text-md"}>{error||"something went wrong"}</span>
+                  <span className={"text-md"}>
+                    {error || "something went wrong"}
+                  </span>
                 </AlertDescription>
               </Alert>
-                <Button asChild variant={"outline"}>
-                    <Link href="/auth/login">Login Again</Link>
-                </Button>
+              <Button asChild variant={"outline"}>
+                <Link href="/auth/login">Login Again</Link>
+              </Button>
             </div>
           </div>
         </form>

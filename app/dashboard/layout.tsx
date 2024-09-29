@@ -4,7 +4,7 @@ import Navbar from "@/components/navbar";
 import { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Dashboard",
-  description: "The dashboard of the Next auth example",
+  description: "The Dashboard of the Next auth example",
 };
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (

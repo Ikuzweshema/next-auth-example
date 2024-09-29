@@ -16,8 +16,8 @@ interface EmailTemplateProps {
 }
 
 export default function EmailTemplate({
-  username = "Shema",
-  verificationToken = "882828299juwuf2",
+  username,
+  verificationToken,
 }: EmailTemplateProps) {
   return (
     <Html>
@@ -44,7 +44,10 @@ export default function EmailTemplate({
             button below:
           </Text>
           <Section style={btnContainer}>
-            <Button style={button} href={`/auth/${verificationToken}/ve`}>
+            <Button
+              style={button}
+              href={`${process.env.BASE_URL}/auth/${verificationToken}/verify`}
+            >
               Verify Email
             </Button>
           </Section>
@@ -69,9 +72,6 @@ const main = {
   backgroundColor: "#ffffff",
   fontFamily:
     '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif',
-
-  flexDirection: "column",
-  gap: "2rem",
 };
 
 const container = {

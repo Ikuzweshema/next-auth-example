@@ -22,7 +22,9 @@ export const metadata: Metadata = {
     template: "%s-Next-Auth-Example",
   },
   description: "Example Of Authentication in next js using Next-auth",
-  
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({
@@ -44,7 +46,6 @@ export default function RootLayout({
           >
             {" "}
             {children}
-           
           </ThemeProvider>
         </SessionProvider>
       </body>

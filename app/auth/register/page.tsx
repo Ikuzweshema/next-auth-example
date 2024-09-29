@@ -3,7 +3,7 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Register",
-  description: "Registration page",
+  description: "Registration page -Next Auth Example",
 };
 export default function Page() {
   return (
