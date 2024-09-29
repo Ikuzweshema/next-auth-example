@@ -22,6 +22,7 @@ export const metadata: Metadata = {
     template: "%s-Next-Auth-Example",
   },
   description: "Example Of Authentication in next js using Next-auth",
+  
 };
 
 export default function RootLayout({
