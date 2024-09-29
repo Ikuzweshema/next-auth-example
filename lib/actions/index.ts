@@ -8,7 +8,7 @@ import bcrypt from "bcryptjs";
 import sendMail from "@/mail/send";
 import generateToken from "@/lib/token";
 import { BuiltInProviderType } from "@auth/core/providers";
-import { Prisma} from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 /**
  * Function Authenticate
@@ -24,6 +24,10 @@ export async function authenticate(
   const email = formData.get("email");
   try {
     await signIn("credentials", formData);
+    return {
+      status:"success",
+      message:"login sucessfully"
+    }
   } catch (e) {
     if (e instanceof AuthError) {
       switch (e.type) {
@@ -39,13 +43,13 @@ export async function authenticate(
               status: "error",
               message: "something went wrong",
             };
-          } else {
-            return resendVerificationToken({
-              id: user.id,
-              name: user.name,
-              email: user.email,
-            });
           }
+          return resendVerificationToken({
+            id: user.id,
+            name: user.name,
+            email: user.email,
+          });
+
         default:
           return {
             status: "error",
@@ -219,7 +223,7 @@ export default async function signInWithProvider(
     throw e;
   }
 }
-async function findUserByEmail(email: string) {
+async function findUserByEmail(email: string):Promise<Prisma.UserCreateInput|null> {
   const user = await prisma.user.findFirst({
     where: {
       email: email,

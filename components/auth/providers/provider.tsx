@@ -6,9 +6,10 @@ import signInWithProvider from "@/lib/actions";
 import { ReloadIcon, GitHubLogoIcon } from "@radix-ui/react-icons";
 import AlertMessage from "@/components/auth/alert";
 import Image from "next/image";
+import { BuiltInProviderType } from "@auth/core/providers";
 
 type ProviderProps = {
-  name: "Google" | "Github";
+  name: BuiltInProviderType;
 };
 export default function Provider({ name }: ProviderProps) {
   const [status, dispatch] = useFormState(signInWithProvider, undefined);
@@ -33,7 +34,7 @@ function SubmitButton({ name }: { name: string }) {
       type={"submit"}
     >
       {pending && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}{" "}
-      {name === "Google" ? (
+      {name === "google" ? (
         <Image src={"/Google.png"} width={22} alt={"google"} height={22} />
       ) : (
         <GitHubLogoIcon />

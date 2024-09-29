@@ -16,6 +16,13 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL(DEFAULT_REDIRECT_URL, nextUrl));
   }
 }
+
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|.*\\.png$).*)"],
+  matcher: [
+    "/((?!api|_next/static|_next/image|.*\\.png$).*)",
+  ],
+  unstable_allowDynamic: [
+    "**/node_modules/.pnpm/@react-email+tailwind@0.0.15_react@18.2.0/**",
+    "c"
+  ],
 };

@@ -1,16 +1,14 @@
 import React from "react";
-import {
-  Body,
-  Container,
-  Head,
-  Heading,
-  Html,
-  Img,
-  Link,
-  Preview,
-  Text,
-} from "@react-email/components";
-import { Button } from "@/components/ui/button";
+import { Body } from "@react-email/body";
+import { Button } from "@react-email/button";
+import { Head } from "@react-email/head";
+import { Html } from "@react-email/html";
+import { Hr } from "@react-email/hr";
+import { Preview } from "@react-email/preview";
+import { Section } from "@react-email/section";
+import { Text } from "@react-email/text";
+import { Img } from "@react-email/img";
+import { Container } from "@react-email/container";
 
 interface EmailTemplateProps {
   username: string;
@@ -18,50 +16,48 @@ interface EmailTemplateProps {
 }
 
 export default function EmailTemplate({
-  username,
-  verificationToken,
+  username = "Shema",
+  verificationToken = "882828299juwuf2",
 }: EmailTemplateProps) {
   return (
     <Html>
       <Head />
-      <Preview>Verify your email address</Preview>
+      <Preview>
+        The sales intelligence platform that helps you uncover qualified leads.
+      </Preview>
       <Body style={main}>
         <Container style={container}>
-          <Img
-            src={"https://express-auth-app.vercel.app/logo.png"}
-            width="150"
-            height="100"
-            alt="Your App Logo"
-            style={logo}
-          />
-          <Heading as="h1" style={h1}>
-            Verify Your Email Address
-          </Heading>
-          <Text style={text}>Hello {username},</Text>
-          <Text style={text}>
+          <Container style={{ display: "flex", justifyContent: "center" }}>
+            <Img
+              src={`https://nextauthappexample.vercel.app/logo.png`}
+              width="140"
+              height="140"
+              alt="Koala"
+              className="mx-auto my-20"
+            />
+          </Container>
+
+          <Text style={paragraph}>Hi {username},</Text>
+          <Text style={paragraph}>
             Thank you for signing up! To complete your registration and start
             using our app, please verify your email address by clicking the
             button below:
           </Text>
-          <Button asChild>
-            <Link
-              href={`${process.env.BASE_URL}/auth/${verificationToken}/verify`}
-              target="_blank"
-              style={{
-                display: "inline-block",
-                textDecoration: "none",
-              }}
-            >
-              Verify Email Address
-            </Link>
-          </Button>
-          <Text style={text}>
-            If you didn't create an account, you can safely ignore this email.
-          </Text>
-          <Text style={{ ...text, marginTop: "14px" }}>
-            Best regards,
+          <Section style={btnContainer}>
+            <Button style={button} href={`/auth/${verificationToken}/ve`}>
+              Verify Email
+            </Button>
+          </Section>
+          <Text style={paragraph}>
+            Best,
             <br />
-            The Next Auth Example Team
+            Shema Elisa
+          </Text>
+          <Hr style={hr} />
+          <Text style={footer}>
+            <Button href="https://github.com/Ikuzweshema/next-auth-example">
+              Next Auth Example
+            </Button>
           </Text>
         </Container>
       </Body>
@@ -70,34 +66,52 @@ export default function EmailTemplate({
 }
 
 const main = {
-  backgroundColor: "hsl(var(--background))",
-  fontFamily: "var(--font-sans)",
+  backgroundColor: "#ffffff",
+  fontFamily:
+    '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif',
+
+  flexDirection: "column",
+  gap: "2rem",
 };
 
 const container = {
   margin: "0 auto",
   padding: "20px 0 48px",
-  width: "560px",
 };
 
 const logo = {
   margin: "0 auto",
 };
 
-const h1 = {
-  color: "hsl(var(--foreground))",
-  fontSize: "24px",
-  fontWeight: "700",
-  lineHeight: "40px",
-  letterSpacing: "-0.5px",
-  margin: "48px 0",
-  padding: "0",
-  textAlign: "center" as const,
+const paragraph = {
+  fontSize: "16px",
+  lineHeight: "26px",
 };
 
-const text = {
-  color: "hsl(var(--foreground))",
-  fontSize: "14px",
-  lineHeight: "24px",
-  margin: "0 0 24px",
+const btnContainer = {
+  textAlign: "center" as const,
+  display: "flex",
+  justifyContent: "center",
+};
+
+const button = {
+  backgroundColor: "#5F51E8",
+  borderRadius: "3px",
+  color: "#fff",
+  fontSize: "16px",
+  textDecoration: "none",
+  textAlign: "center" as const,
+  display: "block",
+  padding: "12px",
+  width: "15rem",
+};
+
+const hr = {
+  borderColor: "#cccccc",
+  margin: "20px 0",
+};
+
+const footer = {
+  color: "#8898aa",
+  fontSize: "12px",
 };

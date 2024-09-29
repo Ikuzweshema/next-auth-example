@@ -4,7 +4,7 @@ import { MailStatus } from "@/lib/definitions";
 import { render } from "@react-email/render";
 import EmailTemplate from "@/mail/templates/verify";
 
-sendGrid.setApiKey(process.env.SEND_GRID_API_KEY);
+sendGrid.setApiKey(process.env.SEND_GRID_API_KEY||"");
 
 /**
  * sendMail function
@@ -30,7 +30,7 @@ export default async function sendMail(
   try {
     await sendGrid.send({
       to: to,
-      from: process.env.MAIL_FROM,
+      from: process.env.MAIL_FROM||"",
       subject: subject,
       text: text,
       html: html,
