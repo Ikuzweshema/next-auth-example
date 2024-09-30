@@ -6,25 +6,25 @@ import {
   RegisterState,
   userSchema,
   verificationToken,
-} from "@/lib/definitions";
+} from "../types";
 import { ZodError } from "zod";
-import { prisma } from "@/lib/db/db";
+import { prisma } from "@/lib/db";
 import bcrypt from "bcryptjs";
 import sendMail from "@/mail/send";
-import generateToken from "@/lib/token";
+import { generateToken } from "@/lib/utils";
 import { BuiltInProviderType } from "@auth/core/providers";
 import { Prisma } from "@prisma/client";
 
 export async function authenticate(
   prevState: AuthStatus | undefined,
-  formData: FormData
+  formData: FormData,
 ): Promise<AuthStatus> {
   const email = formData.get("email") as string;
   try {
     await signIn("credentials", formData);
     return {
       status: "success",
-      message: "login sucessfully",
+      message: "login successfully",
     };
   } catch (e) {
     if (e instanceof AuthError) {
@@ -75,7 +75,7 @@ export async function findUserByCredentials(email: string, password: string) {
 
 export async function addUser(
   prevSate: RegisterState | undefined,
-  formData: FormData
+  formData: FormData,
 ): Promise<RegisterState> {
   try {
     const validate = userSchema.safeParse({
@@ -196,7 +196,7 @@ export async function verifyToken(token: string): Promise<AuthStatus> {
 
 export default async function signInWithProvider(
   prevState: AuthStatus | undefined,
-  formData: FormData
+  formData: FormData,
 ): Promise<AuthStatus> {
   try {
     const provider = formData.get("provider") as BuiltInProviderType;
@@ -224,16 +224,21 @@ export default async function signInWithProvider(
   }
 }
 async function findUserByEmail(
-  email: string
+  email: string,
 ): Promise<Prisma.UserCreateInput | null> {
-  const user = await prisma.user.findFirst({
-    where: {
-      email: email,
-    },
-  });
-  if (!user) return null;
+  try {
+    const user = await prisma.user.findFirst({
+      where: {
+        email: email,
+      },
+    });
+    if (!user) return null;
 
-  return user;
+    return user;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
 }
 
 async function sendVerificationToken({
@@ -258,7 +263,7 @@ async function sendVerificationToken({
     "Thanks For Registration to Next-Auth-Example",
     "Please Confirm Your Email to continue to Next-Auth-Example",
     name || "",
-    token
+    token,
   );
 }
 
@@ -280,7 +285,7 @@ async function resendVerificationToken({
 }
 
 async function getTokenByToken(
-  token: string | null
+  token: string | null,
 ): Promise<verificationToken | null> {
   if (!token) {
     return null;
@@ -298,7 +303,7 @@ async function getTokenByToken(
 
 export async function getUserByAndResend(
   prevState: AuthStatus | undefined,
-  formData: FormData
+  formData: FormData,
 ): Promise<AuthStatus> {
   const token = formData.get("token") as string | null;
   const verificationToken = await getTokenByToken(token);

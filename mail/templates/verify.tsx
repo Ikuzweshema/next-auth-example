@@ -22,9 +22,7 @@ export default function EmailTemplate({
   return (
     <Html>
       <Head />
-      <Preview>
-        The sales intelligence platform that helps you uncover qualified leads.
-      </Preview>
+      <Preview>Please Verify your Email</Preview>
       <Body style={main}>
         <Container style={container}>
           <Container style={{ display: "flex", justifyContent: "center" }}>
@@ -52,7 +50,10 @@ export default function EmailTemplate({
             </Button>
           </Section>
           <Text style={paragraph}>
-            Best,
+            If you did not create an account, you can safely ignore this email.
+          </Text>
+          <Text style={paragraph}>
+            Best regards,
             <br />
             Shema Elisa
           </Text>

@@ -1,10 +1,10 @@
-"use server"
+"use server";
 import sendGrid from "@sendgrid/mail";
-import { MailStatus } from "@/lib/definitions";
+import { MailStatus } from "@/lib/types";
 import { render } from "@react-email/render";
 import EmailTemplate from "@/mail/templates/verify";
 
-sendGrid.setApiKey(process.env.SEND_GRID_API_KEY||"");
+sendGrid.setApiKey(process.env.SEND_GRID_API_KEY || "");
 
 /**
  * sendMail function
@@ -21,16 +21,16 @@ export default async function sendMail(
   subject: string,
   text: string,
   username: string,
-  verificationToken: string
+  verificationToken: string,
 ): Promise<MailStatus> {
   const html = await render(
-    <EmailTemplate username={username} verificationToken={verificationToken} />
+    <EmailTemplate username={username} verificationToken={verificationToken} />,
   );
 
   try {
     await sendGrid.send({
       to: to,
-      from: process.env.MAIL_FROM||"",
+      from: process.env.MAIL_FROM || "",
       subject: subject,
       text: text,
       html: html,
@@ -42,7 +42,7 @@ export default async function sendMail(
   } catch (e) {
     return {
       status: "error",
-      message:"Email not sent",
+      message: "Email not sent",
     };
   }
 }

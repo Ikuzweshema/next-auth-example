@@ -22,7 +22,7 @@ function SubmitButton() {
   const { pending } = useFormStatus();
   return (
     <Button type={"submit"} disabled={pending} variant={"outline"}>
-      <ShieldEllipsis size={16} /> Get Anew one
+      <ShieldEllipsis size={16} /> Resend
     </Button>
   );
 }

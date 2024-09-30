@@ -1,4 +1,4 @@
-import { AuthStatus } from "@/lib/definitions";
+import { AuthStatus } from "@/lib/types";
 import { AlertDescription } from "@/components/ui/alert";
 import { CheckCheck, ShieldAlert } from "lucide-react";
 import { Alert } from "@/components/ui/alert";
@@ -6,7 +6,7 @@ export default function AlertMessage(status: AuthStatus) {
   return (
     <Alert
       variant={status.status === "success" ? "default" : "destructive"}
-      className={`mt-3 ${status.status === "success" ? "bg-green-600" : ""}`}
+      className={`mt-3 ${status.status === "success" ? "bg-green-400" : ""}`}
     >
       <AlertDescription className={" flex justify-center"}>
         <span className={"text-md flex gap-2"}>
