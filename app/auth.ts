@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
-import { findUserByCredentials } from "@/lib/actions";
+import { getUserByCredentials } from "@/lib/actions";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/db";
 import Github from "next-auth/providers/github";
@@ -19,7 +19,7 @@ export const { signOut, signIn, auth, handlers } = NextAuth({
       authorize: async (credentials) => {
         const { email, password } = credentials;
 
-        const user = await findUserByCredentials(
+        const user = await getUserByCredentials(
           email as string,
           password as string
         );

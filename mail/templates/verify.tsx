@@ -22,7 +22,7 @@ export default function EmailTemplate({
   return (
     <Html>
       <Head />
-      <Preview>Please Verify your Email</Preview>
+      <Preview>Example of Authentication in Next js</Preview>
       <Body style={main}>
         <Container style={container}>
           <Container style={{ display: "flex", justifyContent: "center" }}>

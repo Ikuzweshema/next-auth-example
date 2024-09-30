@@ -14,6 +14,7 @@ import sendMail from "@/mail/send";
 import { generateToken } from "@/lib/utils";
 import { BuiltInProviderType } from "@auth/core/providers";
 import { Prisma } from "@prisma/client";
+import { sendVerificationTokenEmail } from "@/mail/send/verification-token";
 
 export async function authenticate(
   prevState: AuthStatus | undefined,
@@ -35,7 +36,7 @@ export async function authenticate(
             message: "Invalid Credentials",
           };
         case "AccessDenied":
-          const user = await findUserByEmail(email);
+          const user = await getUserByEmail(email);
           if (!user || user.emailVerified) {
             return {
               status: "error",
@@ -59,11 +60,9 @@ export async function authenticate(
   }
 }
 
-export async function findUserByCredentials(email: string, password: string) {
+export async function getUserByCredentials(email: string, password: string) {
   try {
-    const user = await prisma.user.findUnique({
-      where: { email: email },
-    });
+    const user = await getUserByEmail(email);
     if (!user) return null;
     const isMatch = await bcrypt.compare(password, user.password as string);
     if (!isMatch) return null;
@@ -139,14 +138,7 @@ export async function addUser(
 
 export async function verifyToken(token: string): Promise<AuthStatus> {
   try {
-    const verificationToken = await prisma.verificationToken.findFirst({
-      where: { token: token },
-      select: {
-        userId: true,
-        token: true,
-        expires: true,
-      },
-    });
+    const verificationToken = await getTokenByToken(token);
     if (!verificationToken) {
       return {
         status: "error",
@@ -223,7 +215,7 @@ export default async function signInWithProvider(
     throw e;
   }
 }
-async function findUserByEmail(
+async function getUserByEmail(
   email: string,
 ): Promise<Prisma.UserCreateInput | null> {
   try {
@@ -258,12 +250,12 @@ async function sendVerificationToken({
       expires: new Date(Date.now() + 3600 * 1000),
     },
   });
-  return await sendMail(
+  return await sendVerificationTokenEmail(
+    name || "",
+    token,
     email || "",
     "Thanks For Registration to Next-Auth-Example",
     "Please Confirm Your Email to continue to Next-Auth-Example",
-    name || "",
-    token,
   );
 }
 
@@ -301,7 +293,7 @@ async function getTokenByToken(
   return verificationToken;
 }
 
-export async function getUserByAndResend(
+export async function getUserAndResendToken(
   prevState: AuthStatus | undefined,
   formData: FormData,
 ): Promise<AuthStatus> {
@@ -313,11 +305,7 @@ export async function getUserByAndResend(
       message: "No user found",
     };
   }
-  const user = await prisma.user.findUnique({
-    where: {
-      id: verificationToken.userId,
-    },
-  });
+  const user = await getUserById(verificationToken.userId);
   if (!user) {
     return {
       status: "error",
@@ -325,8 +313,26 @@ export async function getUserByAndResend(
     };
   }
   return await resendVerificationToken({
-    email: user.email,
-    id: user.id,
-    name: user.name,
+    email: user.email as string,
+    id: user.id as string,
+    name: user.name as string,
   });
+}
+
+async function getUserById(
+  userId: string,
+): Promise<Prisma.UserCreateInput | null> {
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+    if (!user) {
+      return null;
+    }
+    return null;
+  } catch (e) {
+    return null;
+  }
 }

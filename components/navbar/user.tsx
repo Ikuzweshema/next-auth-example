@@ -10,10 +10,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import {signOut, useSession} from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 export default function User() {
-  const session=useSession()
+  const session = useSession();
 
   return (
     <div className={"flex flex-col"}>
@@ -25,7 +25,7 @@ export default function User() {
             className="overflow-hidden rounded-full"
           >
             <Image
-              src={`${session.data?.user?.image||"https://i.pravatar.cc"}`}
+              src={`${session.data?.user?.image || "https://i.pravatar.cc"}`}
               width={36}
               height={36}
               alt="Avatar"
@@ -37,12 +37,17 @@ export default function User() {
           <DropdownMenuLabel>{session.data?.user?.name}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem>
-            <Link href={"/dashboard/profile"}>Profile</Link>
+            <Link href={"/dashboard/settings"}>Profile</Link>
           </DropdownMenuItem>
-          <DropdownMenuItem>Settings</DropdownMenuItem>
-          <DropdownMenuItem>Support</DropdownMenuItem>
+          <DropdownMenuItem>
+            <Link href="/dashboard/settings">Settings</Link>{" "}
+          </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem><Button onClick={()=>signOut()} variant={"link"}>Logout</Button> </DropdownMenuItem>
+          <DropdownMenuItem>
+            <Button size="sm" onClick={() => signOut()} variant={"ghost"}>
+              Logout
+            </Button>{" "}
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

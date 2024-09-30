@@ -3,11 +3,11 @@
 import { Button } from "@/components/ui/button";
 import { ShieldEllipsis } from "lucide-react";
 import { useFormState, useFormStatus } from "react-dom";
-import { getUserByAndResend } from "@/lib/actions";
+import { getUserAndResendToken } from "@/lib/actions";
 import AlertMessage from "@/components/auth/alert";
 
 export default function ResendForm({ token }: { token: string }) {
-  const [status, dispatch] = useFormState(getUserByAndResend, undefined);
+  const [status, dispatch] = useFormState(getUserAndResendToken, undefined);
   return (
     <div>
       <form action={dispatch}>

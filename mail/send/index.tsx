@@ -1,9 +1,5 @@
 "use server";
 import sendGrid from "@sendgrid/mail";
-import { MailStatus } from "@/lib/types";
-import { render } from "@react-email/render";
-import EmailTemplate from "@/mail/templates/verify";
-
 sendGrid.setApiKey(process.env.SEND_GRID_API_KEY || "");
 
 /**
@@ -12,21 +8,14 @@ sendGrid.setApiKey(process.env.SEND_GRID_API_KEY || "");
  * @param to {string} The receiver's email address
  * @param subject {string} The email subject
  * @param text {string} The email text
- * @param verificationToken {string} The verification token
- * @param username {string} The username
- * @return {MailStatus} Mail Status
+ * @param html {string} The Email Text
  */
 export default async function sendMail(
   to: string,
   subject: string,
   text: string,
-  username: string,
-  verificationToken: string,
-): Promise<MailStatus> {
-  const html = await render(
-    <EmailTemplate username={username} verificationToken={verificationToken} />,
-  );
-
+  html: string,
+) {
   try {
     await sendGrid.send({
       to: to,
@@ -35,14 +24,7 @@ export default async function sendMail(
       text: text,
       html: html,
     });
-    return {
-      status: "success",
-      message: "Please verify your email.",
-    };
   } catch (e) {
-    return {
-      status: "error",
-      message: "Email not sent",
-    };
+    throw new Error("Email not sent");
   }
 }

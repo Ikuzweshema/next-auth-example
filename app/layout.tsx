@@ -4,6 +4,8 @@ import "./globals.css";
 import ThemeProvider from "@/components/providers/theme-provider";
 import React from "react";
 import { SessionProvider } from "next-auth/react";
+import { TooltipProvider } from "@radix-ui/react-tooltip";
+import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -24,6 +26,8 @@ export const metadata: Metadata = {
   description: "Example Of Authentication in next js using Next-auth",
   icons: {
     icon: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+    shortcut: "/favicon-16x16.png",
   },
 };
 
@@ -38,15 +42,18 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <SessionProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {" "}
-            {children}
-          </ThemeProvider>
+          <TooltipProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              {" "}
+              {children}
+              <Toaster/>
+            </ThemeProvider>
+          </TooltipProvider>
         </SessionProvider>
       </body>
     </html>
