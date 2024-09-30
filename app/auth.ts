@@ -5,6 +5,7 @@ import { getUserByCredentials } from "@/lib/actions";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/db";
 import Github from "next-auth/providers/github";
+
 export const { signOut, signIn, auth, handlers } = NextAuth({
   adapter: PrismaAdapter(prisma),
   providers: [
@@ -13,12 +14,10 @@ export const { signOut, signIn, auth, handlers } = NextAuth({
       type: "credentials",
       name: "Credentials",
       credentials: {
-        email: {},
-        password: {},
+        email: { type: "email" },
+        password: { type: "password" },
       },
-      authorize: async (credentials) => {
-        const { email, password } = credentials;
-
+      authorize: async ({ email, password }) => {
         const user = await getUserByCredentials(
           email as string,
           password as string

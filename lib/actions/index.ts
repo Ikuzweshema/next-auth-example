@@ -10,7 +10,6 @@ import {
 import { ZodError } from "zod";
 import { prisma } from "@/lib/db";
 import bcrypt from "bcryptjs";
-import sendMail from "@/mail/send";
 import { generateToken } from "@/lib/utils";
 import { BuiltInProviderType } from "@auth/core/providers";
 import { Prisma } from "@prisma/client";
@@ -18,7 +17,7 @@ import { sendVerificationTokenEmail } from "@/mail/send/verification-token";
 
 export async function authenticate(
   prevState: AuthStatus | undefined,
-  formData: FormData,
+  formData: FormData
 ): Promise<AuthStatus> {
   const email = formData.get("email") as string;
   try {
@@ -62,7 +61,11 @@ export async function authenticate(
 
 export async function getUserByCredentials(email: string, password: string) {
   try {
-    const user = await getUserByEmail(email);
+    const user = await prisma.user.findUnique({
+      where: {
+        email: email,
+      },
+    });
     if (!user) return null;
     const isMatch = await bcrypt.compare(password, user.password as string);
     if (!isMatch) return null;
@@ -74,7 +77,7 @@ export async function getUserByCredentials(email: string, password: string) {
 
 export async function addUser(
   prevSate: RegisterState | undefined,
-  formData: FormData,
+  formData: FormData
 ): Promise<RegisterState> {
   try {
     const validate = userSchema.safeParse({
@@ -188,7 +191,7 @@ export async function verifyToken(token: string): Promise<AuthStatus> {
 
 export default async function signInWithProvider(
   prevState: AuthStatus | undefined,
-  formData: FormData,
+  formData: FormData
 ): Promise<AuthStatus> {
   try {
     const provider = formData.get("provider") as BuiltInProviderType;
@@ -216,7 +219,7 @@ export default async function signInWithProvider(
   }
 }
 async function getUserByEmail(
-  email: string,
+  email: string
 ): Promise<Prisma.UserCreateInput | null> {
   try {
     const user = await prisma.user.findFirst({
@@ -255,7 +258,7 @@ async function sendVerificationToken({
     token,
     email || "",
     "Thanks For Registration to Next-Auth-Example",
-    "Please Confirm Your Email to continue to Next-Auth-Example",
+    "Please Confirm Your Email to continue to Next-Auth-Example"
   );
 }
 
@@ -277,7 +280,7 @@ async function resendVerificationToken({
 }
 
 async function getTokenByToken(
-  token: string | null,
+  token: string | null
 ): Promise<verificationToken | null> {
   if (!token) {
     return null;
@@ -295,7 +298,7 @@ async function getTokenByToken(
 
 export async function getUserAndResendToken(
   prevState: AuthStatus | undefined,
-  formData: FormData,
+  formData: FormData
 ): Promise<AuthStatus> {
   const token = formData.get("token") as string | null;
   const verificationToken = await getTokenByToken(token);
@@ -320,7 +323,7 @@ export async function getUserAndResendToken(
 }
 
 async function getUserById(
-  userId: string,
+  userId: string
 ): Promise<Prisma.UserCreateInput | null> {
   try {
     const user = await prisma.user.findUnique({
