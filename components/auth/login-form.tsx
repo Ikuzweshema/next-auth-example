@@ -1,16 +1,14 @@
 "use client";
 import Link from "next/link";
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import Image from "next/image";
 import { useFormStatus, useFormState } from "react-dom";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { authenticate } from "@/lib/actions";
 import Providers from "@/components/auth/providers";
 import AlertMessage from "@/components/auth/alert";
+import InputField from "./input-field";
 export function LoginForm() {
   const [status, dispatch] = useFormState(authenticate, undefined);
   return (
@@ -23,28 +21,14 @@ export function LoginForm() {
       <CardContent>
         <div className="grid gap-4">
           <form action={dispatch} className={"flex flex-col gap-4"}>
-            <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                name={"email"}
-                required
-              />
-            </div>
-            <div className="grid gap-2">
-              <div className="flex items-center">
-                <Label htmlFor="password">Password</Label>
-                <Link
-                  href="#"
-                  className="ml-auto inline-block text-sm underline"
-                >
-                  Forgot your password?
-                </Link>
-              </div>
-              <Input id="password" type="password" name={"password"} required />
-            </div>
+            <InputField label="Email" type="email" name="email" placeholder="email@example.com" />
+            <InputField  label="Password" name="password" type="password" placeholder="Enter your password.." />
+            <Link
+              href="#"
+              className="ml-auto inline-block text-sm underline"
+            >
+              Forgot your password?
+            </Link>
             <SubmitButton />
             {status?.status && <AlertMessage {...status} />}
           </form>

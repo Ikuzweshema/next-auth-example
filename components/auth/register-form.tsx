@@ -3,13 +3,13 @@ import Link from "next/link";
 import { useFormState, useFormStatus } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
 import { addUser } from "@/lib/actions";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import Providers from "@/components/auth/providers";
 import AlertMessage from "@/components/auth/alert";
+import InputField from "@/components/auth/input-field";
 
 export function RegisterForm() {
   const [status, dispatch] = useFormState(addUser, undefined);
@@ -23,15 +23,7 @@ export function RegisterForm() {
       <CardContent>
         <div className="grid gap-4">
           <form action={dispatch} className={"flex flex-col gap-4"}>
-            <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                name={"email"}
-              />
-            </div>
+            <InputField label="Email" type="email" name="email" placeholder="email@example.com" />
             {status?.errors?.email &&
               status?.errors?.email.map((error) => (
                 <Label key={error} className={"text-red-600"}>
@@ -39,29 +31,14 @@ export function RegisterForm() {
                 </Label>
               ))}
 
-            <div className="grid gap-2">
-              <Label htmlFor="email">Name:</Label>
-              <Input
-                id="username"
-                type="text"
-                name={"name"}
-                placeholder="m@example.com"
-                required
-              />
-            </div>
+            <InputField label="Name" type="text" name="name" placeholder="Enter your name.." />
             {status?.errors?.name &&
               status.errors.name.map((error) => (
                 <Label key={error} className={"text-red-600"}>
                   {error}
                 </Label>
               ))}
-
-            <div className="grid gap-2">
-              <div className="flex items-center">
-                <Label htmlFor="password">Password</Label>
-              </div>
-              <Input id="password" type="password" name={"password"} required />
-            </div>
+            <InputField label="Password" type="password" name="password" placeholder="Enter your password.." />
             {status?.errors?.password &&
               status?.errors?.password.map((error) => (
                 <Label key={error} className={"text-red-600"}>
