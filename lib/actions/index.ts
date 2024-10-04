@@ -3,6 +3,7 @@ import { signIn } from "@/app/auth";
 import { AuthError } from "next-auth";
 import {
   AuthStatus,
+  loginSchema,
   RegisterState,
   userSchema,
   verificationToken,
@@ -14,14 +15,29 @@ import { generateToken } from "@/lib/utils";
 import { BuiltInProviderType } from "@auth/core/providers";
 import { Prisma } from "@prisma/client";
 import { sendVerificationTokenEmail } from "@/mail/send/verification-token";
+import { DEFAULT_REDIRECT_URL } from "@/routes";
 
 export async function authenticate(
   prevState: AuthStatus | undefined,
   formData: FormData
 ): Promise<AuthStatus> {
-  const email = formData.get("email") as string;
+  const validate = loginSchema.safeParse({
+    email: formData.get("email"),
+    password: formData.get("password"),
+  });
+  if (!validate.success) {
+    return {
+      status: "error",
+      message: validate.error.errors[0].message,
+    };
+  }
+  const { email, password } = validate.data;
   try {
-    await signIn("credentials", formData);
+    await signIn("credentials", {
+      email,
+      password,
+      redirectTo: DEFAULT_REDIRECT_URL,
+    });
     return {
       status: "success",
       message: "login successfully",

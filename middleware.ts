@@ -9,15 +9,26 @@ export default async function middleware(request: NextRequest) {
   const isOnDashboard = nextUrl.pathname.startsWith("/dashboard");
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
   if (isOnDashboard && !isLoggedIn) {
-    return NextResponse.redirect(new URL("/auth/login", nextUrl));
+    let callbackUrl = nextUrl.pathname;
+    if (nextUrl.searchParams) {
+      callbackUrl += nextUrl.searchParams;
+    }
+    const encodedCallbackUrl = encodeURIComponent(callbackUrl);
+    return NextResponse.redirect(
+      new URL(`/auth/login?callbackUrl=${encodedCallbackUrl}`, nextUrl)
+    );
   }
   if (isAuthRoute && isLoggedIn) {
-    return NextResponse.redirect(new URL(DEFAULT_REDIRECT_URL, nextUrl));
+    const callbackUrl = nextUrl.searchParams.get("callbackUrl");
+    return NextResponse.redirect(
+      new URL(callbackUrl || DEFAULT_REDIRECT_URL, nextUrl)
+    );
   }
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|.*\\.png$).*)"],
-
+  matcher: [
+    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    "/(api|trpc)(.*)",
+  ],
 };
-

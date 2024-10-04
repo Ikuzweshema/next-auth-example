@@ -77,3 +77,7 @@ export type verificationToken = {
   token: string;
   expires: Date;
 };
+
+export const loginSchema = userSchema.omit({
+  name: true,
+});
