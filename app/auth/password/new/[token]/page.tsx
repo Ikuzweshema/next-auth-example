@@ -1,7 +1,7 @@
 import { NewPasswordFrom } from "@/components/auth/new-password-form";
 import { console } from "inspector";
 import { Metadata } from "next";
-export const meatada: Metadata = {
+export const metadata: Metadata = {
     title: "New Password",
     description: "Reset Password Page - Next Auth Example"
 }
