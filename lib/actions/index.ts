@@ -4,6 +4,7 @@ import { AuthError } from "next-auth";
 import {
   AuthStatus,
   loginSchema,
+  passwordResetSchema,
   RegisterState,
   userSchema,
   verificationToken,
@@ -16,6 +17,7 @@ import { BuiltInProviderType } from "@auth/core/providers";
 import { Prisma } from "@prisma/client";
 import { sendVerificationTokenEmail } from "@/mail/send/verification-token";
 import { DEFAULT_REDIRECT_URL } from "@/routes";
+import { z } from "zod"
 
 export async function authenticate(
   prevState: AuthStatus | undefined,
@@ -354,4 +356,144 @@ async function getUserById(
   } catch (e) {
     return null;
   }
+}
+
+async function getPasswordTokenByToken(token: string) {
+  const passwordResetToken = await prisma.passwordResetToken.findFirst({
+    where: {
+      token
+    }
+  })
+  return passwordResetToken
+}
+
+async function getPasswordTokenByEmail(email: string) {
+  const passwordResetToken = await prisma.passwordResetToken.findFirst({
+    where: {
+      user: {
+        email: email
+      }
+    }
+  })
+  return passwordResetToken
+}
+
+async function sendPasswordResetToken(prevState: AuthStatus | undefined, formData: FormData): Promise<AuthStatus> {
+  try {
+    const validate = z.object({
+      email: z.string().email({
+        message: "This has to be an email"
+      })
+    }).safeParse(formData.get("email"))
+    if (!validate.success) {
+      return {
+        status: "error",
+        message: validate.error.errors[0].message
+      }
+    }
+    const { email } = validate.data
+    const user = await getUserByEmail(email)
+    if (!user) {
+      return {
+        status: "error",
+        message: "User not found"
+      }
+    }
+    const existingToken = await getPasswordTokenByEmail(email)
+    if (existingToken) {
+      await prisma.passwordResetToken.deleteMany({
+        where: {
+          userId: existingToken.userId
+        }
+      })
+    }
+    const token = await generateToken()
+    await prisma.passwordResetToken.create({
+      data: {
+        token: token,
+        expires: new Date(Date.now() + 3600 * 1000),
+        userId: user.id as string
+      }
+    })
+    return {
+      status: "success",
+      message: "Check your email for password reset link"
+    }
+
+  } catch (e) {
+    return {
+      status: "error",
+      message: "Password reset link not sent"
+    }
+  }
+
+}
+
+async function verifyPasswordToken(prevState: AuthStatus | undefined, formData: FormData): Promise<AuthStatus | undefined> {
+  try {
+    const validate = passwordResetSchema.safeParse({
+      token: formData.get("token"),
+      password: formData.get("password"),
+      cpassword: formData.get("cpassword")
+    })
+    if (!validate.success) {
+      return {
+        status: "error",
+        message: validate.error.errors[0].message
+      }
+    }
+    const { cpassword, password, token } = validate.data
+    if (password !== cpassword) {
+      return {
+        status: "error",
+        message: "Passwords do not match"
+      }
+    }
+    const passwordResetToken = await getPasswordTokenByToken(token)
+    if (!passwordResetToken) {
+      return {
+        status: "error",
+        message: "Verification token not found"
+      }
+    }
+    const hasExpired = new Date(passwordResetToken.expires) < new Date(Date.now())
+    if (hasExpired) {
+      return {
+        status: "error",
+        message: "Password reset token has expired"
+      }
+    }
+    const hashed = await bcrypt.hash(password, 10)
+    await prisma.user.update({
+      where: {
+        id: passwordResetToken.userId
+      },
+      data: {
+        password: hashed
+      }
+    })
+    await prisma.passwordResetToken.deleteMany({
+      where: {
+        userId: passwordResetToken.userId
+      }
+    })
+
+    return {
+      status: "success",
+      message: "Password updated successfully"
+    }
+  } catch (e) {
+    if (e instanceof ZodError) {
+      return {
+        status: "error",
+        message: "validation failed",
+      }
+    }
+    return {
+      status: "error",
+      message: "Something went wrong"
+    }
+  }
+
+
 }

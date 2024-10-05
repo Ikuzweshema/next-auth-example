@@ -1,3 +1,4 @@
+import exp from "constants";
 import { z } from "zod";
 
 /**
@@ -81,3 +82,11 @@ export type verificationToken = {
 export const loginSchema = userSchema.omit({
   name: true,
 });
+
+export const passwordResetSchema=z.object({
+  token:z.string(),
+  password:z.string().min(4,{
+    message:"This password is not strong"
+  }),
+  cpassword:z.string()
+})

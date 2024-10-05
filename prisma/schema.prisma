@@ -19,6 +19,7 @@ model User {
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
   twoFactorEnabled Boolean            @default(false)
+  passwordResetToken PasswordResetToken?
 }
 
 model Account {
@@ -47,5 +48,14 @@ model VerificationToken {
   userId  String   @unique @db.ObjectId
   token   String
   user    User     @relation(fields: [userId], references: [id])
+  expires DateTime
+}
+
+
+model PasswordResetToken{
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  userId String @unique @db.ObjectId
+  token  String
+  user   User     @relation(fields: [userId], references: [id])
   expires DateTime
 }
