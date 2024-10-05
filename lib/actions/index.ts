@@ -1,6 +1,15 @@
 "use server";
 import { signIn } from "@/app/auth";
+import { prisma } from "@/lib/db";
+import { generateToken } from "@/lib/utils";
+import { sendPaswordResetTokenEmail } from "@/mail/send/password-reset-token";
+import { sendVerificationTokenEmail } from "@/mail/send/verification-token";
+import { DEFAULT_REDIRECT_URL } from "@/routes";
+import { BuiltInProviderType } from "@auth/core/providers";
+import { Prisma } from "@prisma/client";
+import bcrypt from "bcryptjs";
 import { AuthError } from "next-auth";
+import { z, ZodError } from "zod";
 import {
   AuthStatus,
   loginSchema,
@@ -9,15 +18,6 @@ import {
   userSchema,
   verificationToken,
 } from "../types";
-import { ZodError } from "zod";
-import { prisma } from "@/lib/db";
-import bcrypt from "bcryptjs";
-import { generateToken } from "@/lib/utils";
-import { BuiltInProviderType } from "@auth/core/providers";
-import { Prisma } from "@prisma/client";
-import { sendVerificationTokenEmail } from "@/mail/send/verification-token";
-import { DEFAULT_REDIRECT_URL } from "@/routes";
-import { z } from "zod"
 
 export async function authenticate(
   prevState: AuthStatus | undefined,
@@ -378,12 +378,10 @@ async function getPasswordTokenByEmail(email: string) {
   return passwordResetToken
 }
 
-async function sendPasswordResetToken(prevState: AuthStatus | undefined, formData: FormData): Promise<AuthStatus> {
+export async function sendPasswordResetToken(prevState: AuthStatus | undefined, formData: FormData): Promise<AuthStatus> {
   try {
-    const validate = z.object({
-      email: z.string().email({
-        message: "This has to be an email"
-      })
+    const validate = z.string().email({
+      message: "Invalid Email"
     }).safeParse(formData.get("email"))
     if (!validate.success) {
       return {
@@ -391,7 +389,7 @@ async function sendPasswordResetToken(prevState: AuthStatus | undefined, formDat
         message: validate.error.errors[0].message
       }
     }
-    const { email } = validate.data
+    const email = validate.data
     const user = await getUserByEmail(email)
     if (!user) {
       return {
@@ -415,10 +413,7 @@ async function sendPasswordResetToken(prevState: AuthStatus | undefined, formDat
         userId: user.id as string
       }
     })
-    return {
-      status: "success",
-      message: "Check your email for password reset link"
-    }
+    return await sendPaswordResetTokenEmail(user.name as string, token, user.email as string)
 
   } catch (e) {
     return {
@@ -429,7 +424,7 @@ async function sendPasswordResetToken(prevState: AuthStatus | undefined, formDat
 
 }
 
-async function verifyPasswordToken(prevState: AuthStatus | undefined, formData: FormData): Promise<AuthStatus | undefined> {
+export async function verifyPasswordToken(prevState: AuthStatus | undefined, formData: FormData): Promise<AuthStatus | undefined> {
   try {
     const validate = passwordResetSchema.safeParse({
       token: formData.get("token"),
@@ -442,13 +437,8 @@ async function verifyPasswordToken(prevState: AuthStatus | undefined, formData: 
         message: validate.error.errors[0].message
       }
     }
-    const { cpassword, password, token } = validate.data
-    if (password !== cpassword) {
-      return {
-        status: "error",
-        message: "Passwords do not match"
-      }
-    }
+    const { password, token } = validate.data
+
     const passwordResetToken = await getPasswordTokenByToken(token)
     if (!passwordResetToken) {
       return {

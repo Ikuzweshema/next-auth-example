@@ -22,9 +22,9 @@ export function LoginForm() {
         <div className="grid gap-4">
           <form action={dispatch} className={"flex flex-col gap-4"}>
             <InputField label="Email" type="email" name="email" placeholder="email@example.com" />
-            <InputField  label="Password" name="password" type="password" placeholder="Enter your password.." />
+            <InputField label="Password" name="password" type="password" placeholder="Enter your password.." />
             <Link
-              href="#"
+              href="/auth/password/reset"
               className="ml-auto inline-block text-sm underline"
             >
               Forgot your password?

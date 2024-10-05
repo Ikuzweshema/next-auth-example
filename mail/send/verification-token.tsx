@@ -1,6 +1,6 @@
 "use server"
 /**
- * send Verification toke
+ * send Verification token
  * This function sends an email and takes the following parameters
  * @param verificationToken {string} The verification token
  * @param to {string} The receiver's email address

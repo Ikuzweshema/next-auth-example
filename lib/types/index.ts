@@ -83,10 +83,14 @@ export const loginSchema = userSchema.omit({
   name: true,
 });
 
-export const passwordResetSchema=z.object({
-  token:z.string(),
-  password:z.string().min(4,{
-    message:"This password is not strong"
+export const passwordResetSchema = z.object({
+  token: z.string().uuid({
+    message: "Invalid token"
   }),
-  cpassword:z.string()
+  password: z.string().min(4, {
+    message: "This password is not strong"
+  }),
+  cpassword: z.string()
+}).refine(data => data.password === data.cpassword, {
+  message: "Password does not match"
 })
