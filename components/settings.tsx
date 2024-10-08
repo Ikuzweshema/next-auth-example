@@ -1,26 +1,37 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/lib/hooks/use-toast";
-import { useSession } from "next-auth/react";
+import { updateUser } from "@/lib/actions";
+import { useFormState, useFormStatus } from "react-dom";
+import { ReloadIcon } from "@radix-ui/react-icons";
+import { Session } from "next-auth";
 
-export default function Settings() {
-  const [enabled, setEnabled] = useState(false);
-  const session = useSession();
+interface SettingsProps {
+  session: Session | null;
+}
+export default function SettingsForm({ session }: SettingsProps) {
+  const [enabled, setEnabled] = useState(
+    session?.user.twoFactorEnabled || false
+  );
   const { toast } = useToast();
-
-  function handleClick() {
+  const [status, dispatch] = useFormState(updateUser, undefined);
+  useEffect(() => {
+    if (!status) {
+      return;
+    }
     toast({
-      variant: "default",
-      title: "success",
-      description: "Setting updated",
+      title: status.status.toLocaleUpperCase(),
+      description: status.message,
       duration: 2000,
+      variant: status.status == "error" ? "destructive" : "default",
     });
-  }
+    return;
+  }, [status]);
   return (
     <div className="space-y-6">
       <div>
@@ -29,18 +40,24 @@ export default function Settings() {
           Manage your account settings and two factor Authentication.
         </p>
       </div>
-      <form className="space-y-8">
+      <form className="space-y-8" action={dispatch}>
         <div className="space-y-4">
+          <input type="hidden" name="id" value={session?.user.id} />
           <div className="space-y-2">
             <Label htmlFor="name">Name</Label>
-            <Input id="name" defaultValue={session.data?.user.name ?? ""} />
+            <Input
+              id="name"
+              name="name"
+              defaultValue={session?.user.name ?? ""}
+            />
           </div>
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
               id="email"
               type="email"
-              defaultValue={session.data?.user.email ?? ""}
+              name="email"
+              defaultValue={session?.user.email ?? ""}
             />
           </div>
         </div>
@@ -49,15 +66,29 @@ export default function Settings() {
             id="notifications"
             checked={enabled}
             onCheckedChange={setEnabled}
+            name="enabled"
+          />
+          <input
+            type="hidden"
+            name="twoFactorEnabled"
+            value={enabled ? "true" : 0}
           />
           <Label htmlFor="notifications">Two factor Authentication</Label>
         </div>
         <div className="flex justify-center">
-          <Button type="button" onClick={handleClick}>
-            Save changes
-          </Button>
+          <SubmitButton />
         </div>
       </form>
     </div>
+  );
+}
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <Button type="submit" disabled={pending}>
+      {pending && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
+      {pending ? "Saving.." : "Save changes"}
+    </Button>
   );
 }

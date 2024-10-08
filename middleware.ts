@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/app/auth";
-import { DEFAULT_REDIRECT_URL, authRoutes } from "@/routes";
 
 export default async function middleware(request: NextRequest) {
   const session = await auth();
   const { nextUrl } = request;
   const isLoggedIn = !!session?.user;
   const isOnDashboard = nextUrl.pathname.startsWith("/dashboard");
-  const isAuthRoute = authRoutes.includes(nextUrl.pathname);
+  const isOnAuthRoute = nextUrl.pathname.startsWith("/auth");
   if (isOnDashboard && !isLoggedIn) {
     let callbackUrl = nextUrl.pathname;
     if (nextUrl.searchParams) {
@@ -18,12 +17,11 @@ export default async function middleware(request: NextRequest) {
       new URL(`/auth/login?callbackUrl=${encodedCallbackUrl}`, nextUrl)
     );
   }
-  if (isAuthRoute && isLoggedIn) {
+  if (isOnAuthRoute && isLoggedIn) {
     const callbackUrl = nextUrl.searchParams.get("callbackUrl");
-    return NextResponse.redirect(
-      new URL(callbackUrl || DEFAULT_REDIRECT_URL, nextUrl)
-    );
+    return NextResponse.redirect(new URL(callbackUrl || "/dashboard", nextUrl));
   }
+  return NextResponse.next()
 }
 
 export const config = {

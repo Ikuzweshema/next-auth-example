@@ -4,7 +4,6 @@ import { prisma } from "@/lib/db";
 import { generateToken } from "@/lib/utils";
 import { sendPaswordResetTokenEmail } from "@/mail/send/password-reset-token";
 import { sendVerificationTokenEmail } from "@/mail/send/verification-token";
-import { DEFAULT_REDIRECT_URL } from "@/routes";
 import { BuiltInProviderType } from "@auth/core/providers";
 import { Prisma } from "@prisma/client";
 import bcrypt from "bcryptjs";
@@ -38,7 +37,7 @@ export async function authenticate(
     await signIn("credentials", {
       email,
       password,
-      redirectTo: DEFAULT_REDIRECT_URL,
+      redirectTo: "/dashboard",
     });
     return {
       status: "success",
@@ -361,129 +360,188 @@ async function getUserById(
 async function getPasswordTokenByToken(token: string) {
   const passwordResetToken = await prisma.passwordResetToken.findFirst({
     where: {
-      token
-    }
-  })
-  return passwordResetToken
+      token,
+    },
+  });
+  return passwordResetToken;
 }
 
 async function getPasswordTokenByEmail(email: string) {
   const passwordResetToken = await prisma.passwordResetToken.findFirst({
     where: {
       user: {
-        email: email
-      }
-    }
-  })
-  return passwordResetToken
+        email: email,
+      },
+    },
+  });
+  return passwordResetToken;
 }
 
-export async function sendPasswordResetToken(prevState: AuthStatus | undefined, formData: FormData): Promise<AuthStatus> {
+export async function sendPasswordResetToken(
+  prevState: AuthStatus | undefined,
+  formData: FormData
+): Promise<AuthStatus> {
   try {
-    const validate = z.string().email({
-      message: "Invalid Email"
-    }).safeParse(formData.get("email"))
+    const validate = z
+      .string()
+      .email({
+        message: "Invalid Email",
+      })
+      .safeParse(formData.get("email"));
     if (!validate.success) {
       return {
         status: "error",
-        message: validate.error.errors[0].message
-      }
+        message: validate.error.errors[0].message,
+      };
     }
-    const email = validate.data
-    const user = await getUserByEmail(email)
+    const email = validate.data;
+    const user = await getUserByEmail(email);
     if (!user) {
       return {
         status: "error",
-        message: "User not found"
-      }
+        message: "User not found",
+      };
     }
-    const existingToken = await getPasswordTokenByEmail(email)
+    const existingToken = await getPasswordTokenByEmail(email);
     if (existingToken) {
       await prisma.passwordResetToken.deleteMany({
         where: {
-          userId: existingToken.userId
-        }
-      })
+          userId: existingToken.userId,
+        },
+      });
     }
-    const token = await generateToken()
+    const token = await generateToken();
     await prisma.passwordResetToken.create({
       data: {
         token: token,
         expires: new Date(Date.now() + 3600 * 1000),
-        userId: user.id as string
-      }
-    })
-    return await sendPaswordResetTokenEmail(user.name as string, token, user.email as string)
-
+        userId: user.id as string,
+      },
+    });
+    return await sendPaswordResetTokenEmail(
+      user.name as string,
+      token,
+      user.email as string
+    );
   } catch (e) {
     return {
       status: "error",
-      message: "Password reset link not sent"
-    }
+      message: "Password reset link not sent",
+    };
   }
-
 }
 
-export async function verifyPasswordToken(prevState: AuthStatus | undefined, formData: FormData): Promise<AuthStatus | undefined> {
+export async function verifyPasswordToken(
+  prevState: AuthStatus | undefined,
+  formData: FormData
+): Promise<AuthStatus | undefined> {
   try {
     const validate = passwordResetSchema.safeParse({
       token: formData.get("token"),
       password: formData.get("password"),
-      cpassword: formData.get("cpassword")
-    })
+      cpassword: formData.get("cpassword"),
+    });
     if (!validate.success) {
       return {
         status: "error",
-        message: validate.error.errors[0].message
-      }
+        message: validate.error.errors[0].message,
+      };
     }
-    const { password, token } = validate.data
+    const { password, token } = validate.data;
 
-    const passwordResetToken = await getPasswordTokenByToken(token)
+    const passwordResetToken = await getPasswordTokenByToken(token);
     if (!passwordResetToken) {
       return {
         status: "error",
-        message: "Verification token not found"
-      }
+        message: "Verification token not found",
+      };
     }
-    const hasExpired = new Date(passwordResetToken.expires) < new Date(Date.now())
+    const hasExpired =
+      new Date(passwordResetToken.expires) < new Date(Date.now());
     if (hasExpired) {
       return {
         status: "error",
-        message: "Password reset token has expired"
-      }
+        message: "Password reset token has expired",
+      };
     }
-    const hashed = await bcrypt.hash(password, 10)
+    const hashed = await bcrypt.hash(password, 10);
     await prisma.user.update({
       where: {
-        id: passwordResetToken.userId
+        id: passwordResetToken.userId,
       },
       data: {
-        password: hashed
-      }
-    })
+        password: hashed,
+      },
+    });
     await prisma.passwordResetToken.deleteMany({
       where: {
-        userId: passwordResetToken.userId
-      }
-    })
+        userId: passwordResetToken.userId,
+      },
+    });
 
     return {
       status: "success",
-      message: "Password updated successfully"
-    }
+      message: "Password updated successfully",
+    };
   } catch (e) {
     if (e instanceof ZodError) {
       return {
         status: "error",
         message: "validation failed",
-      }
+      };
     }
     return {
       status: "error",
-      message: "Something went wrong"
-    }
+      message: "Something went wrong",
+    };
   }
+}
 
+export async function updateUser(
+  prevState: AuthStatus | undefined,
+  formData: FormData
+): Promise<AuthStatus> {
+  try {
+    const validate = await userSchema
+      .omit({
+        password: true,
+      })
+      .extend({
+        id: z.string(),
+        enabled: z.coerce.boolean(),
+      })
+      .safeParse({
+        email: formData.get("email"),
+        name: formData.get("name"),
+        id: formData.get("id"),
+        enabled: formData.get("enabled"),
+      });
+    if (!validate.success) {
+      return {
+        status: "error",
+        message: validate.error.errors[0].message,
+      };
+    }
 
+    const { email, name, id, enabled } = validate.data;
+    await prisma.user.update({
+      where: {
+        id,
+      },
+      data: {
+        email: email,
+        name: name,
+        twoFactorEnabled: enabled,
+      },
+    });
+    return {
+      status: "success",
+      message: "Profile updated",
+    };
+  } catch (e) {
+    return {
+      status: "error",
+      message: "something went wrong",
+    };
+  }
 }
