@@ -41,7 +41,7 @@ Follow these steps to install and set up the project:
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/yourusername/nextjs-auth-example.git
+   git clone https://github.com/Ikuzweshema/nextjs-auth-example.git
    ```
 
 2. **Navigate to the project directory:**
