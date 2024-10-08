@@ -21,7 +21,7 @@ export const { signOut, signIn, auth, handlers } = NextAuth({
         } catch (e) {
           throw e;
         }
-      },  
+      },
     }),
     Credentials({
       id: "credentials",
@@ -60,12 +60,13 @@ export const { signOut, signIn, auth, handlers } = NextAuth({
   pages: {
     error: "/auth/error",
     verifyRequest: "/auth/verify/request",
+    signIn: "/auth/login",
   },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
         token.sub = user.id;
-        token.emailVerified = user.emailVerified;
+        token.emailVerified = user.emailVerified as Date | null;
         token.twoFactorEnabled = user.twoFactorEnabled;
       }
       return token;
@@ -73,8 +74,8 @@ export const { signOut, signIn, auth, handlers } = NextAuth({
     async session({ token, session }) {
       if (token.sub && session.user) {
         session.user.id = token.sub;
-        session.user.emailVerified = token.emailVerified as Date | null;
-        session.user.twoFactorEnabled = token.twoFactorEnabled as boolean;
+        session.user.emailVerified = token.emailVerified;
+        session.user.twoFactorEnabled = token.twoFactorEnabled;
       }
 
       return session;

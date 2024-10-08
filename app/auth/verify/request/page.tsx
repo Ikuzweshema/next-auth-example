@@ -21,7 +21,7 @@ export default function Page() {
       <CardContent>
         <div className="grid gap-4">
           <div className="grid gap-2">
-            <Alert variant="ghost">
+            <Alert variant="default">
               <AlertTitle className="rounded-md flex justify-center">
                 <Mail size={60} />
               </AlertTitle>

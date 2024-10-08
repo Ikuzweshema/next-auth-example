@@ -14,8 +14,8 @@ async function sendSignInVerification(
 ) {
   try {
     const { host } = new URL(url);
-    const subject = `Signin To ${host}`;
-    const text = `Continue to your account`;
+    const subject = `Continue To ${host}`;
+    const text = `Please Verify Email to Continue to Your account<`;
     const html = await render(
       <SignInRequestEmail expires={expires} url={url} />
     );

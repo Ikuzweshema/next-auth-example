@@ -9,6 +9,7 @@ import { authenticate } from "@/lib/actions";
 import Providers from "@/components/auth/providers";
 import AlertMessage from "@/components/auth/alert";
 import InputField from "./input-field";
+import EmailForm from "./email-form";
 export function LoginForm() {
   const [status, dispatch] = useFormState(authenticate, undefined);
   return (
@@ -32,6 +33,7 @@ export function LoginForm() {
             <SubmitButton />
             {status?.status && <AlertMessage {...status} />}
           </form>
+          <EmailForm/>
           <Providers />
         </div>
 

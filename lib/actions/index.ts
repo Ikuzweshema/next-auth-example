@@ -545,3 +545,32 @@ export async function updateUser(
     };
   }
 }
+
+export async function signInWithSendgrid(
+  prevState: AuthStatus | undefined,
+  formData: FormData
+): Promise<AuthStatus> {
+  try {
+    await signIn("sendgrid", formData);
+    return {
+      status: "success",
+      message: "login sucess",
+    };
+  } catch (error) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case "Verification":
+          return {
+            status: "error",
+            message: "Email verification error",
+          };
+        default:
+          return {
+            status: "error",
+            message: "Something went wrong",
+          };
+      }
+    }
+    throw error;
+  }
+}
