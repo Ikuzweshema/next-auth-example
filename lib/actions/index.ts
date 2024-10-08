@@ -182,7 +182,7 @@ export async function verifyToken(token: string): Promise<AuthStatus> {
         emailVerified: new Date(Date.now()),
       },
     });
-    await prisma.verificationToken.deleteMany({
+    await prisma.emailVerificationToken.deleteMany({
       where: {
         userId: verificationToken.userId,
       },
@@ -263,7 +263,7 @@ async function sendVerificationToken({
   name: string | null;
 }): Promise<AuthStatus> {
   const token = await generateToken();
-  await prisma.verificationToken.create({
+  await prisma.emailVerificationToken.create({
     data: {
       userId: id,
       token: token,
@@ -288,7 +288,7 @@ async function resendVerificationToken({
   email: string | null;
   name: string | null;
 }): Promise<AuthStatus> {
-  await prisma.verificationToken.deleteMany({
+  await prisma.emailVerificationToken.deleteMany({
     where: {
       userId: id,
     },
@@ -302,7 +302,7 @@ async function getTokenByToken(
   if (!token) {
     return null;
   }
-  const verificationToken = await prisma.verificationToken.findFirst({
+  const verificationToken = await prisma.emailVerificationToken.findFirst({
     where: {
       token: token,
     },

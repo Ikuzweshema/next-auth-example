@@ -11,18 +11,18 @@ import { Img } from "@react-email/img";
 import { Container } from "@react-email/container";
 
 interface EmailTemplateProps {
-  username: string;
-  passwordResetToken: string;
+  expires: Date;
+  url: string;
 }
 
-export default function PasswordResetEmail({
-  username,
-  passwordResetToken,
+export default function SignInRequestEmail({
+  expires,
+  url,
 }: EmailTemplateProps) {
   return (
     <Html>
       <Head />
-      <Preview>Your Password Reset Verifaction Token</Preview>
+      <Preview>Please Verify Email to Continue to Your account</Preview>
       <Body style={main}>
         <Container style={container}>
           <Container style={{ display: "flex", justifyContent: "center" }}>
@@ -30,27 +30,28 @@ export default function PasswordResetEmail({
               src={`https://nextauthappexample.vercel.app/logo.png`}
               width="140"
               height="140"
-              alt="Koala"
+              alt="Logo"
               className="mx-auto my-20"
             />
           </Container>
 
-          <Text style={paragraph}>Hi {username},</Text>
+          <Text style={paragraph}>Hello </Text>
           <Text style={paragraph}>
-            Please Click The button below To Reset Your Password ,
+            Click the button below to sign in to your account . This link will
+            expire in {expires.getHours()} hours.
           </Text>
           <Section style={btnContainer}>
-            <Button
-              style={button}
-              href={`${process.env.BASE_URL}/auth/password/new/${passwordResetToken}`}
-            >
-              Reset Password
+            <Button style={button} href={url}>
+              Sign In
             </Button>
           </Section>
           <Text style={paragraph}>
+            If you didn't request this email, you can safely ignore it.
+          </Text>
+          <Text style={paragraph}>
             Best,
             <br />
-            Shema Elisa
+            The Team
           </Text>
           <Hr style={hr} />
           <Text style={footer}>
@@ -73,10 +74,6 @@ const main = {
 const container = {
   margin: "0 auto",
   padding: "20px 0 48px",
-};
-
-const logo = {
-  margin: "0 auto",
 };
 
 const paragraph = {

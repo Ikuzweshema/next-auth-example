@@ -6,10 +6,23 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/db";
 import Github from "next-auth/providers/github";
 import { loginSchema } from "@/lib/types";
-
+import SendGrid from "next-auth/providers/sendgrid";
+import sendSignInVerification from "@/mail/send/sign-in";
 export const { signOut, signIn, auth, handlers } = NextAuth({
   adapter: PrismaAdapter(prisma),
   providers: [
+    SendGrid({
+      from: process.env.MAIL_FROM,
+      apiKey: process.env.SEND_GRID_API_KEY,
+      sendVerificationRequest: async (params) => {
+        const { url, identifier, expires } = params;
+        try {
+          await sendSignInVerification(url, identifier, expires);
+        } catch (e) {
+          throw e;
+        }
+      },  
+    }),
     Credentials({
       id: "credentials",
       type: "credentials",
@@ -45,8 +58,8 @@ export const { signOut, signIn, auth, handlers } = NextAuth({
     strategy: "jwt",
   },
   pages: {
-    signIn: "/auth/login",
     error: "/auth/error",
+    verifyRequest: "/auth/verify/request",
   },
   callbacks: {
     async jwt({ token, user }) {
@@ -69,6 +82,7 @@ export const { signOut, signIn, auth, handlers } = NextAuth({
     async signIn({ user, account }) {
       if (account?.provider === "credentials") {
         if (!user.emailVerified) return false;
+        return true;
       }
 
       return true;

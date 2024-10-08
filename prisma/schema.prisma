@@ -8,17 +8,17 @@ generator client {
 }
 
 model User {
-  id               String             @id @default(auto()) @map("_id") @db.ObjectId
-  name             String?
-  email            String?            @unique
-  emailVerified    DateTime?
-  image            String?
-  password         String?
-  accounts         Account[]
-  tokens           VerificationToken?
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
-  twoFactorEnabled Boolean            @default(false)
+  id                 String                  @id @default(auto()) @map("_id") @db.ObjectId
+  name               String?
+  email              String?                 @unique
+  emailVerified      DateTime?
+  image              String?
+  password           String?
+  accounts           Account[]
+  tokens             EmailVerificationToken?
+  createdAt          DateTime                @default(now())
+  updatedAt          DateTime                @updatedAt
+  twoFactorEnabled   Boolean                 @default(false)
   passwordResetToken PasswordResetToken?
 }
 
@@ -43,7 +43,7 @@ model Account {
   @@unique([provider, providerAccountId])
 }
 
-model VerificationToken {
+model EmailVerificationToken {
   id      String   @id @default(auto()) @map("_id") @db.ObjectId
   userId  String   @unique @db.ObjectId
   token   String
@@ -51,11 +51,19 @@ model VerificationToken {
   expires DateTime
 }
 
-
-model PasswordResetToken{
-  id    String @id @default(auto()) @map("_id") @db.ObjectId
-  userId String @unique @db.ObjectId
-  token  String
-  user   User     @relation(fields: [userId], references: [id])
+model PasswordResetToken {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId  String   @unique @db.ObjectId
+  token   String
+  user    User     @relation(fields: [userId], references: [id])
   expires DateTime
+}
+
+model VerificationToken {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  identifier String
+  token      String
+  expires    DateTime
+ 
+  @@unique([identifier, token])
 }
