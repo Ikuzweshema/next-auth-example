@@ -41,13 +41,13 @@ Follow these steps to install and set up the project:
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/Ikuzweshema/nextjs-auth-example.git
+   git clone https://github.com/Ikuzweshema/next-auth-example.git
    ```
 
 2. **Navigate to the project directory:**
 
  ```bash
-   cd nextjs-auth-example
+   cd next-auth-example
   ````
 
 3. **Install dependencies using PNPM:**
