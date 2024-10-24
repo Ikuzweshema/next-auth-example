@@ -1,5 +1,6 @@
 import { LoginForm } from "@/components/auth/login-form";
 import { Metadata } from "next";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Login",
@@ -8,7 +9,9 @@ export const metadata: Metadata = {
 export default function Page() {
   return (
     <div className=" flex justify-center flex-col my-6 p-2">
-      <LoginForm />
+      <Suspense fallback={null}>
+        <LoginForm />
+      </Suspense>
     </div>
   );
 }
