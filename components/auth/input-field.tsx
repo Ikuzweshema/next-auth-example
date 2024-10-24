@@ -10,7 +10,7 @@ interface InputFieldProps {
 
 }
 export default function InputField({ label, type, name, placeholder }: InputFieldProps) {
-  return <div className="grid gap-2">
+  return <div className="grid gap-1">
     <Label htmlFor={name}>{label}</Label>
     <Input
       id={name}

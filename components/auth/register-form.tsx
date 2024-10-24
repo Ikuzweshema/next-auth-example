@@ -14,10 +14,10 @@ import InputField from "@/components/auth/input-field";
 export function RegisterForm() {
   const [status, dispatch] = useFormState(addUser, undefined);
   return (
-    <Card className="mx-auto w-96">
+    <Card className="mx-auto w-full max-w-md rounded-sm">
       <CardHeader>
         <CardTitle className="text-2xl flex justify-center">
-          <Image src={"/logo.png"} height={125} width={125} alt="logo" />
+          <Image src={"/logo.png"} height={100} width={100} alt="logo" />
         </CardTitle>
       </CardHeader>
       <CardContent>

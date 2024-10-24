@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Package2, Settings } from "lucide-react";
 
 import React from "react";
-import { ModeToggle } from "@/components/providers/toogle-mode";
+import ModeToggle from "@/components/providers/toogle-mode";
 
 export default function Navbar() {
   return (
@@ -28,7 +28,8 @@ export default function Navbar() {
         </Link>
       </nav>
 
-      <nav className="mt-auto flex flex-col  gap-4 px-2 sm:py-4">
+      <nav className="mt-auto flex justify-bettween  gap-4  sm:py-4">
+        <div className="px-2">Change Theme</div>
         <ModeToggle />
       </nav>
     </aside>

@@ -9,3 +9,7 @@ export function cn(...inputs: ClassValue[]) {
 export function generateToken() {
   return uuid()
 }
+
+export function capitalize(text: string) {
+  return text.charAt(0).toUpperCase() + text.slice(1)
+}

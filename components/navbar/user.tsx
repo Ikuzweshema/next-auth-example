@@ -1,5 +1,3 @@
-"use client";
-import Image from "next/image";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,31 +8,26 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { signOut, useSession } from "next-auth/react";
+import { Avatar } from "../ui/avatar";
+import { AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { auth, signOut } from "@/app/auth";
 
-export default function User() {
-  const session = useSession();
+export default async function User() {
+  const session = await auth();
 
   return (
     <div className={"flex flex-col"}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button
-            variant="outline"
-            size="icon"
-            className="overflow-hidden rounded-full"
-          >
-            <Image
-              src={`${session.data?.user?.image || "https://i.pravatar.cc"}`}
-              width={36}
-              height={36}
-              alt="Avatar"
-              className="overflow-hidden rounded-full"
-            />
-          </Button>
+          <Avatar className="cursor-pointer">
+            <AvatarImage src={`${session?.user?.image}||"`} />
+            <AvatarFallback>
+              {session?.user.name?.substring(0, 2).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuLabel>{session.data?.user?.name}</DropdownMenuLabel>
+          <DropdownMenuLabel>{session?.user?.name}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem>
             <Link href={"/dashboard/settings"}>Profile</Link>
@@ -44,9 +37,16 @@ export default function User() {
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem>
-            <Button size="sm" onClick={() => signOut()} variant={"ghost"}>
-              Logout
-            </Button>{" "}
+            <form
+              action={async () => {
+                "use server";
+                await signOut();
+              }}
+            >
+              <Button size="sm" variant={"ghost"}>
+                Logout
+              </Button>{" "}
+            </form>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

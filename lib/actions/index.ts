@@ -5,7 +5,7 @@ import { generateToken } from "@/lib/utils";
 import { sendPaswordResetTokenEmail } from "@/mail/send/password-reset-token";
 import { sendVerificationTokenEmail } from "@/mail/send/verification-token";
 import { BuiltInProviderType } from "@auth/core/providers";
-import { Prisma } from "@prisma/client";
+import { Prisma, User } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { AuthError } from "next-auth";
 import { z, ZodError } from "zod";
@@ -19,7 +19,9 @@ import {
 } from "../types";
 
 export async function authenticate(
+  callbackUrl: string | null,
   prevState: AuthStatus | undefined,
+
   formData: FormData
 ): Promise<AuthStatus> {
   const validate = loginSchema.safeParse({
@@ -37,7 +39,7 @@ export async function authenticate(
     await signIn("credentials", {
       email,
       password,
-      redirectTo: "/dashboard",
+      redirectTo: callbackUrl || "/dashboard",
     });
     return {
       status: "success",
@@ -339,19 +341,21 @@ export async function getUserAndResendToken(
   });
 }
 
-async function getUserById(
-  userId: string
-): Promise<Prisma.UserCreateInput | null> {
+export async function getUserById(userId: string) {
   try {
     const user = await prisma.user.findUnique({
       where: {
         id: userId,
       },
+      include: {
+        accounts: true,
+      },
     });
+
     if (!user) {
       return null;
     }
-    return null;
+    return user;
   } catch (e) {
     return null;
   }
@@ -572,5 +576,73 @@ export async function signInWithSendgrid(
       }
     }
     throw error;
+  }
+}
+
+export async function connectProvider(
+  prevSate: AuthStatus | undefined,
+  formData: FormData
+): Promise<AuthStatus> {
+  try {
+    const provider = formData.get("provider") as BuiltInProviderType;
+    return await signIn(provider, {
+      redirectTo: "/dashboard/profile",
+    });
+    return {
+      message: "Account Connected",
+      status: "success",
+    };
+  } catch (e) {
+    if (e instanceof AuthError) {
+      switch (e.type) {
+        case "OAuthCallbackError":
+          return {
+            status: "error",
+            message: e.message,
+          };
+        default:
+          return {
+            status: "error",
+            message: "something went wrong",
+          };
+      }
+    }
+    throw e;
+  }
+}
+
+export async function removeProvider(
+  prevSate: AuthStatus | undefined,
+  formData: FormData
+): Promise<AuthStatus> {
+  try {
+    const provider = formData.get("provider") as string;
+    const userId = formData.get("userId") as string;
+
+    await prisma.account.deleteMany({
+      where: {
+        AND: [
+          {
+            userId: userId,
+            provider: provider,
+          },
+        ],
+      },
+    });
+    return {
+      message: "Account Disconnected",
+      status: "success",
+    };
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      return {
+        message: "Account not disconnected",
+        status: "error",
+      };
+    }
+    return {
+      message: "Something went wrong",
+      status: "error",
+    };
   }
 }

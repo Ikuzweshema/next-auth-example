@@ -8,16 +8,17 @@ import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/lib/hooks/use-toast";
 import { updateUser } from "@/lib/actions";
 import { useFormState, useFormStatus } from "react-dom";
-import { ReloadIcon } from "@radix-ui/react-icons";
-import { Session } from "next-auth";
+import { GitHubLogoIcon, ReloadIcon } from "@radix-ui/react-icons";
+import { Account, User } from "@prisma/client";
+import AccountForm from "./account";
+import { providers } from "@/lib/types/data";
 
 interface SettingsProps {
-  session: Session | null;
+  user: User & { accounts: Account[] };
 }
-export default function SettingsForm({ session }: SettingsProps) {
-  const [enabled, setEnabled] = useState(
-    session?.user.twoFactorEnabled || false
-  );
+export default function SettingsForm({ user }: SettingsProps) {
+  const { email, image, id, name, twoFactorEnabled } = user;
+  const [enabled, setEnabled] = useState(twoFactorEnabled);
   const { toast } = useToast();
   const [status, dispatch] = useFormState(updateUser, undefined);
   useEffect(() => {
@@ -31,33 +32,29 @@ export default function SettingsForm({ session }: SettingsProps) {
       variant: status.status == "error" ? "destructive" : "default",
     });
     return;
-  }, [status]);
+  }, [status, toast]);
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div>
         <h3 className="text-lg font-medium">Settings</h3>
         <p className="text-sm text-muted-foreground">
           Manage your account settings and two factor Authentication.
         </p>
       </div>
-      <form className="space-y-8" action={dispatch}>
-        <div className="space-y-4">
-          <input type="hidden" name="id" value={session?.user.id} />
-          <div className="space-y-2">
+      <form className="space-y-4" action={dispatch}>
+        <div className="space-y-3">
+          <input type="hidden" name="id" value={id} />
+          <div className="space-y-1">
             <Label htmlFor="name">Name</Label>
-            <Input
-              id="name"
-              name="name"
-              defaultValue={session?.user.name ?? ""}
-            />
+            <Input id="name" name="name" defaultValue={name ?? ""} />
           </div>
-          <div className="space-y-2">
+          <div className="space-y-1">
             <Label htmlFor="email">Email</Label>
             <Input
               id="email"
               type="email"
               name="email"
-              defaultValue={session?.user.email ?? ""}
+              defaultValue={email ?? ""}
             />
           </div>
         </div>
@@ -75,10 +72,24 @@ export default function SettingsForm({ session }: SettingsProps) {
           />
           <Label htmlFor="notifications">Two factor Authentication</Label>
         </div>
+
         <div className="flex justify-center">
           <SubmitButton />
         </div>
       </form>
+      <div className="space-y-2">
+        <h5 className="text-center font-medium">Connected Accounts</h5>
+      </div>
+      <div className="space-y-2">
+        {providers.map((provider) => (
+          <AccountForm
+            name={provider.name}
+            key={provider.name}
+            display={provider.display}
+            user={user}
+          />
+        ))}
+      </div>
     </div>
   );
 }

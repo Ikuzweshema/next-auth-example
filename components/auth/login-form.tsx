@@ -10,20 +10,37 @@ import Providers from "@/components/auth/providers";
 import AlertMessage from "@/components/auth/alert";
 import InputField from "./input-field";
 import EmailForm from "./email-form";
+import { useSearchParams } from "next/navigation";
 export function LoginForm() {
-  const [status, dispatch] = useFormState(authenticate, undefined);
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl");
+  const [status, dispatch] = useFormState(
+    authenticate.bind(null, callbackUrl),
+    undefined
+  );
+
   return (
-    <Card className="mx-auto w-96">
+    <Card className="mx-auto w-full max-w-md rounded-sm">
       <CardHeader>
         <CardTitle className="text-2xl flex justify-center">
-          <Image src={"/logo.png"} height={125} width={125} alt="logo" />
+          <Image src={"/logo.png"} height={100} width={100} alt="logo" />
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid gap-4">
+        <div className="grid gap-2">
           <form action={dispatch} className={"flex flex-col gap-4"}>
-            <InputField label="Email" type="email" name="email" placeholder="email@example.com" />
-            <InputField label="Password" name="password" type="password" placeholder="Enter your password.." />
+            <InputField
+              label="Email"
+              type="email"
+              name="email"
+              placeholder="email@example.com"
+            />
+            <InputField
+              label="Password"
+              name="password"
+              type="password"
+              placeholder="Enter your password.."
+            />
             <Link
               href="/auth/password/reset"
               className="ml-auto inline-block text-sm underline"
@@ -33,7 +50,7 @@ export function LoginForm() {
             <SubmitButton />
             {status?.status && <AlertMessage {...status} />}
           </form>
-          <EmailForm/>
+          <EmailForm />
           <Providers />
         </div>
 
