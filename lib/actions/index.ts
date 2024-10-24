@@ -586,7 +586,7 @@ export async function connectProvider(
   try {
     const provider = formData.get("provider") as BuiltInProviderType;
     return await signIn(provider, {
-      redirectTo: "/dashboard/profile",
+      redirectTo: "/dashboard/settings",
     });
     return {
       message: "Account Connected",
