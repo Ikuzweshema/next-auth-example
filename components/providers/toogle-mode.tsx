@@ -1,6 +1,6 @@
 import { useTheme } from "next-themes";
 import { Switch } from "../ui/toggle";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function ModeToggle() {
   const { setTheme, theme } = useTheme();
@@ -10,6 +10,9 @@ export default function ModeToggle() {
     setChecked(!checked);
     return;
   }
+  useEffect(() => {
+    setChecked(theme === "dark");
+  }, []);
   return (
     <div className="flex gap-2">
       <Switch

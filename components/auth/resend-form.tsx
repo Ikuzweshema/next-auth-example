@@ -1,28 +1,24 @@
 "use client";
-
 import { Button } from "@/components/ui/button";
 import { ShieldEllipsis } from "lucide-react";
-import { useFormState, useFormStatus } from "react-dom";
 import { getUserAndResendToken } from "@/lib/actions";
 import AlertMessage from "@/components/auth/alert";
+import { useActionState } from "react";
 
 export default function ResendForm({ token }: { token: string }) {
-  const [status, dispatch] = useFormState(getUserAndResendToken, undefined);
+  const [status, dispatch, pending] = useActionState(
+    getUserAndResendToken,
+    undefined
+  );
   return (
-    <div>
+    <div className="w-full">
       <form action={dispatch}>
         <input type={"hidden"} name={"token"} value={token} />
-        <SubmitButton />
+        <Button type={"submit"} disabled={pending} variant={"outline"}>
+          <ShieldEllipsis size={16} /> Resend
+        </Button>
       </form>
       {status?.status && <AlertMessage {...status} />}
     </div>
-  );
-}
-function SubmitButton() {
-  const { pending } = useFormStatus();
-  return (
-    <Button type={"submit"} disabled={pending} variant={"outline"}>
-      <ShieldEllipsis size={16} /> Resend
-    </Button>
   );
 }

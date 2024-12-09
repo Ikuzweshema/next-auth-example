@@ -19,8 +19,8 @@ export default async function User() {
     <div className={"flex flex-col"}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Avatar className="cursor-pointer">
-            <AvatarImage src={`${session?.user?.image}||"`} />
+          <Avatar className="cursor-pointer  w-10 h-10">
+            <AvatarImage src={session?.user?.image || ""} />
             <AvatarFallback>
               {session?.user.name?.substring(0, 2).toUpperCase()}
             </AvatarFallback>
@@ -45,7 +45,7 @@ export default async function User() {
             >
               <Button size="sm" variant={"ghost"}>
                 Logout
-              </Button>{" "}
+              </Button>
             </form>
           </DropdownMenuItem>
         </DropdownMenuContent>

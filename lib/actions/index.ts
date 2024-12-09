@@ -3,19 +3,26 @@ import { signIn } from "@/app/auth";
 import { prisma } from "@/lib/db";
 import { generateToken } from "@/lib/utils";
 import { sendPaswordResetTokenEmail } from "@/mail/send/password-reset-token";
-import { sendVerificationTokenEmail } from "@/mail/send/verification-token";
 import { BuiltInProviderType } from "@auth/core/providers";
-import { Prisma, User } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { AuthError } from "next-auth";
 import { z, ZodError } from "zod";
+import {
+  getUserById,
+  getPasswordTokenByEmail,
+  getTokenByToken,
+  getUserByEmail,
+  sendVerificationToken,
+  resendVerificationToken,
+  getPasswordTokenByToken,
+} from "@/lib/actions/actions";
 import {
   AuthStatus,
   loginSchema,
   passwordResetSchema,
   RegisterState,
   userSchema,
-  verificationToken,
 } from "../types";
 
 export async function authenticate(
@@ -77,23 +84,6 @@ export async function authenticate(
     throw e;
   }
 }
-
-export async function getUserByCredentials(email: string, password: string) {
-  try {
-    const user = await prisma.user.findUnique({
-      where: {
-        email: email,
-      },
-    });
-    if (!user) return null;
-    const isMatch = await bcrypt.compare(password, user.password as string);
-    if (!isMatch) return null;
-    return user;
-  } catch (e) {
-    return null;
-  }
-}
-
 export async function addUser(
   prevSate: RegisterState | undefined,
   formData: FormData
@@ -237,84 +227,6 @@ export default async function signInWithProvider(
     throw e;
   }
 }
-async function getUserByEmail(
-  email: string
-): Promise<Prisma.UserCreateInput | null> {
-  try {
-    const user = await prisma.user.findFirst({
-      where: {
-        email: email,
-      },
-    });
-    if (!user) return null;
-
-    return user;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-}
-
-async function sendVerificationToken({
-  id,
-  email,
-  name,
-}: {
-  id: string;
-  email: string | null;
-  name: string | null;
-}): Promise<AuthStatus> {
-  const token = await generateToken();
-  await prisma.emailVerificationToken.create({
-    data: {
-      userId: id,
-      token: token,
-      expires: new Date(Date.now() + 3600 * 1000),
-    },
-  });
-  return await sendVerificationTokenEmail(
-    name || "",
-    token,
-    email || "",
-    "Thanks For Registration to Next-Auth-Example",
-    "Please Confirm Your Email to continue to Next-Auth-Example"
-  );
-}
-
-async function resendVerificationToken({
-  id,
-  email,
-  name,
-}: {
-  id: string;
-  email: string | null;
-  name: string | null;
-}): Promise<AuthStatus> {
-  await prisma.emailVerificationToken.deleteMany({
-    where: {
-      userId: id,
-    },
-  });
-  return await sendVerificationToken({ id, name, email });
-}
-
-async function getTokenByToken(
-  token: string | null
-): Promise<verificationToken | null> {
-  if (!token) {
-    return null;
-  }
-  const verificationToken = await prisma.emailVerificationToken.findFirst({
-    where: {
-      token: token,
-    },
-  });
-  if (!verificationToken) {
-    return null;
-  }
-  return verificationToken;
-}
-
 export async function getUserAndResendToken(
   prevState: AuthStatus | undefined,
   formData: FormData
@@ -339,46 +251,6 @@ export async function getUserAndResendToken(
     id: user.id as string,
     name: user.name as string,
   });
-}
-
-export async function getUserById(userId: string) {
-  try {
-    const user = await prisma.user.findUnique({
-      where: {
-        id: userId,
-      },
-      include: {
-        accounts: true,
-      },
-    });
-
-    if (!user) {
-      return null;
-    }
-    return user;
-  } catch (e) {
-    return null;
-  }
-}
-
-async function getPasswordTokenByToken(token: string) {
-  const passwordResetToken = await prisma.passwordResetToken.findFirst({
-    where: {
-      token,
-    },
-  });
-  return passwordResetToken;
-}
-
-async function getPasswordTokenByEmail(email: string) {
-  const passwordResetToken = await prisma.passwordResetToken.findFirst({
-    where: {
-      user: {
-        email: email,
-      },
-    },
-  });
-  return passwordResetToken;
 }
 
 export async function sendPasswordResetToken(
@@ -588,10 +460,6 @@ export async function connectProvider(
     return await signIn(provider, {
       redirectTo: "/dashboard/settings",
     });
-    return {
-      message: "Account Connected",
-      status: "success",
-    };
   } catch (e) {
     if (e instanceof AuthError) {
       switch (e.type) {

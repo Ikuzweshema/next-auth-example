@@ -3,7 +3,6 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
-import { useFormStatus, useFormState } from "react-dom";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { authenticate } from "@/lib/actions";
 import Providers from "@/components/auth/providers";
@@ -11,10 +10,11 @@ import AlertMessage from "@/components/auth/alert";
 import InputField from "./input-field";
 import EmailForm from "./email-form";
 import { useSearchParams } from "next/navigation";
+import { useActionState } from "react";
 export function LoginForm() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl");
-  const [status, dispatch] = useFormState(
+  const [status, dispatch, isPending] = useActionState(
     authenticate.bind(null, callbackUrl),
     undefined
   );
@@ -47,7 +47,16 @@ export function LoginForm() {
             >
               Forgot your password?
             </Link>
-            <SubmitButton />
+            <Button
+              disabled={isPending}
+              type="submit"
+              className="w-full disabled:cursor-not-allowed"
+            >
+              {isPending && (
+                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              {isPending ? "LoggingIn..." : "Login"}
+            </Button>
             {status?.status && <AlertMessage {...status} />}
           </form>
           <EmailForm />
@@ -62,18 +71,5 @@ export function LoginForm() {
         </div>
       </CardContent>
     </Card>
-  );
-}
-function SubmitButton() {
-  const { pending } = useFormStatus();
-  return (
-    <Button
-      disabled={pending}
-      type="submit"
-      className="w-full disabled:cursor-not-allowed"
-    >
-      {pending && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
-      {pending ? "LoggingIn..." : "Login"}
-    </Button>
   );
 }

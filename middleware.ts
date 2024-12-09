@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
+import {NextResponse } from "next/server";
 import { auth } from "@/app/auth";
 
-export default async function middleware(request: NextRequest) {
-  const session = await auth();
+export default auth((request) => {
+  const session = request.auth;
   const { nextUrl } = request;
   const isLoggedIn = !!session?.user;
   const isOnDashboard = nextUrl.pathname.startsWith("/dashboard");
@@ -22,7 +22,7 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL(callbackUrl || "/dashboard", nextUrl));
   }
   return NextResponse.next();
-}
+});
 
 export const config = {
   matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],

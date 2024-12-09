@@ -1,8 +1,7 @@
 import NextAuth, { DefaultSession } from "next-auth";
-import { DefaultUser } from "@auth/core";
-import "next-auth/jwt"
+import "next-auth/jwt";
 declare module "next-auth" {
-  interface User extends DefaultUser {
+  interface User {
     emailVerified?: Date | null;
     twoFactorEnabled?: boolean;
   }
@@ -13,13 +12,11 @@ declare module "next-auth" {
       twoFactorEnabled?: boolean;
     };
   }
-
 }
 
-
-declare module "next-auth/jwt"{
-   interface JWT{
-    twoFactorEnabled:boolean|undefined
-    emailVerified:Date | null
-   }
+declare module "next-auth/jwt" {
+  interface JWT {
+    twoFactorEnabled: boolean | undefined;
+    emailVerified: Date | null;
+  }
 }

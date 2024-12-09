@@ -1,13 +1,13 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
-import { v4 as uuid } from "uuid"
+import {nanoid} from "nanoid"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
 export function generateToken() {
-  return uuid()
+  return  nanoid(12)
 }
 
 export function capitalize(text: string) {

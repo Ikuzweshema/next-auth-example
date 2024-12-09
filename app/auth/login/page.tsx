@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 export default function Page() {
   return (
-    <div className=" flex justify-center flex-col my-6 p-2">
+    <div className=" w-full h-screen items-center flex justify-center flex-col">
       <Suspense fallback={null}>
         <LoginForm />
       </Suspense>

@@ -12,7 +12,8 @@ export const metadata: Metadata = {
 };
 export default function Page() {
   return (
-    <Card className="mx-auto w-[35vw] mt-24">
+    <div className="w-full h-screen flex justify-center items-center">
+    <Card className="mx-auto w-full max-w-md rounded-md">
       <CardHeader>
         <CardTitle className="text-2xl flex justify-center">
           <Image src="/logo.png" height={125} width={125} alt="logo" />
@@ -43,5 +44,7 @@ export default function Page() {
         </div>
       </CardContent>
     </Card>
+    </div>
+   
   );
 }

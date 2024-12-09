@@ -1,14 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/lib/hooks/use-toast";
 import { updateUser } from "@/lib/actions";
-import { useFormState, useFormStatus } from "react-dom";
-import { GitHubLogoIcon, ReloadIcon } from "@radix-ui/react-icons";
+import {  ReloadIcon } from "@radix-ui/react-icons";
 import { Account, User } from "@prisma/client";
 import AccountForm from "./account";
 import { providers } from "@/lib/types/data";
@@ -17,10 +16,10 @@ interface SettingsProps {
   user: User & { accounts: Account[] };
 }
 export default function SettingsForm({ user }: SettingsProps) {
-  const { email, image, id, name, twoFactorEnabled } = user;
+  const { email, id, name, twoFactorEnabled } = user;
   const [enabled, setEnabled] = useState(twoFactorEnabled);
   const { toast } = useToast();
-  const [status, dispatch] = useFormState(updateUser, undefined);
+  const [status, dispatch, pending] = useActionState(updateUser, undefined);
   useEffect(() => {
     if (!status) {
       return;
@@ -34,15 +33,15 @@ export default function SettingsForm({ user }: SettingsProps) {
     return;
   }, [status, toast]);
   return (
-    <div className="space-y-5">
-      <div>
+    <div className="space-y-5 w-full">
+      <div >
         <h3 className="text-lg font-medium">Settings</h3>
         <p className="text-sm text-muted-foreground">
           Manage your account settings and two factor Authentication.
         </p>
       </div>
-      <form className="space-y-4" action={dispatch}>
-        <div className="space-y-3">
+      <form className="space-y-4 w-full" action={dispatch}>
+        <div className="space-y-3 w-full">
           <input type="hidden" name="id" value={id} />
           <div className="space-y-1">
             <Label htmlFor="name">Name</Label>
@@ -58,7 +57,7 @@ export default function SettingsForm({ user }: SettingsProps) {
             />
           </div>
         </div>
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 w-full">
           <Switch
             id="notifications"
             checked={enabled}
@@ -74,13 +73,16 @@ export default function SettingsForm({ user }: SettingsProps) {
         </div>
 
         <div className="flex justify-center">
-          <SubmitButton />
+          <Button type="submit" disabled={pending}>
+            {pending && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
+            {pending ? "Saving.." : "Save changes"}
+          </Button>
         </div>
       </form>
       <div className="space-y-2">
         <h5 className="text-center font-medium">Connected Accounts</h5>
       </div>
-      <div className="space-y-2">
+      <div className="space-y-2 w-full ">
         {providers.map((provider) => (
           <AccountForm
             name={provider.name}
@@ -91,15 +93,5 @@ export default function SettingsForm({ user }: SettingsProps) {
         ))}
       </div>
     </div>
-  );
-}
-
-function SubmitButton() {
-  const { pending } = useFormStatus();
-  return (
-    <Button type="submit" disabled={pending}>
-      {pending && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
-      {pending ? "Saving.." : "Save changes"}
-    </Button>
   );
 }

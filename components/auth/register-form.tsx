@@ -1,6 +1,5 @@
 "use client";
 import Link from "next/link";
-import { useFormState, useFormStatus } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -10,9 +9,10 @@ import { ReloadIcon } from "@radix-ui/react-icons";
 import Providers from "@/components/auth/providers";
 import AlertMessage from "@/components/auth/alert";
 import InputField from "@/components/auth/input-field";
+import { useActionState } from "react";
 
 export function RegisterForm() {
-  const [status, dispatch] = useFormState(addUser, undefined);
+  const [status, dispatch, pending] = useActionState(addUser, undefined);
   return (
     <Card className="mx-auto w-full max-w-md rounded-sm">
       <CardHeader>
@@ -23,7 +23,12 @@ export function RegisterForm() {
       <CardContent>
         <div className="grid gap-4">
           <form action={dispatch} className={"flex flex-col gap-4"}>
-            <InputField label="Email" type="email" name="email" placeholder="email@example.com" />
+            <InputField
+              label="Email"
+              type="email"
+              name="email"
+              placeholder="email@example.com"
+            />
             {status?.errors?.email &&
               status?.errors?.email.map((error) => (
                 <Label key={error} className={"text-red-600"}>
@@ -31,14 +36,24 @@ export function RegisterForm() {
                 </Label>
               ))}
 
-            <InputField label="Name" type="text" name="name" placeholder="Enter your name.." />
+            <InputField
+              label="Name"
+              type="text"
+              name="name"
+              placeholder="Enter your name.."
+            />
             {status?.errors?.name &&
               status.errors.name.map((error) => (
                 <Label key={error} className={"text-red-600"}>
                   {error}
                 </Label>
               ))}
-            <InputField label="Password" type="password" name="password" placeholder="Enter your password.." />
+            <InputField
+              label="Password"
+              type="password"
+              name="password"
+              placeholder="Enter your password.."
+            />
             {status?.errors?.password &&
               status?.errors?.password.map((error) => (
                 <Label key={error} className={"text-red-600"}>
@@ -46,7 +61,14 @@ export function RegisterForm() {
                 </Label>
               ))}
 
-            <SubmitButton />
+            <Button
+              disabled={pending}
+              type="submit"
+              className="w-full disabled:cursor-not-allowed"
+            >
+              {pending && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}{" "}
+              {pending ? "Registering..." : "Register"}
+            </Button>
             {status?.status && <AlertMessage {...status} />}
           </form>
           <Providers />
@@ -59,18 +81,5 @@ export function RegisterForm() {
         </div>
       </CardContent>
     </Card>
-  );
-}
-function SubmitButton() {
-  const { pending } = useFormStatus();
-  return (
-    <Button
-      disabled={pending}
-      type="submit"
-      className="w-full disabled:cursor-not-allowed"
-    >
-      {pending && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}{" "}
-      {pending ? "Registering..." : "Register"}
-    </Button>
   );
 }

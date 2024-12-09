@@ -1,13 +1,13 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
-import { getUserByCredentials } from "@/lib/actions";
+import { getUserByCredentials } from "@/lib/actions/actions";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/db";
 import Github from "next-auth/providers/github";
 import { loginSchema } from "@/lib/types";
 import SendGrid from "next-auth/providers/sendgrid";
-import sendSignInVerification from "@/mail/send/sign-in";
+import { sendSignInVerification } from "@/mail/send/sign-in";
 export const { signOut, signIn, auth, handlers } = NextAuth({
   adapter: PrismaAdapter(prisma),
   providers: [

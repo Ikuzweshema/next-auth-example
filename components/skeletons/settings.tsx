@@ -3,7 +3,7 @@ import { Switch } from "@/components/ui/switch"
 
 export default function SettingsSkeleton() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full">
       <div>
         <Skeleton className="h-7 w-24 mb-1" />
         <Skeleton className="h-4 w-64" />

@@ -6,7 +6,8 @@ import { verifyToken } from "@/lib/actions";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import ResendForm from "@/components/auth/resend-form";
-export default async function Page({ params }: { params: { token: string } }) {
+export default async function Page(props: { params: Promise<{ token: string }> }) {
+  const params = await props.params;
   const { token } = params;
   const status = await verifyToken(token);
   return (

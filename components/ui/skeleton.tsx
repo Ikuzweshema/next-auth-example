@@ -11,5 +11,4 @@ function Skeleton({
     />
   )
 }
-
 export { Skeleton }

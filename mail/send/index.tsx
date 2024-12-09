@@ -1,15 +1,6 @@
-"use server";
+import "server-only"
 import sendGrid from "@sendgrid/mail";
 sendGrid.setApiKey(process.env.SEND_GRID_API_KEY || "");
-
-/**
- * sendMail function
- * This function sends an email and takes the following parameters
- * @param to {string} The receiver's email address
- * @param subject {string} The email subject
- * @param text {string} The email text
- * @param html {string} The Email Text
- */
 export default async function sendMail(
   to: string,
   subject: string,
