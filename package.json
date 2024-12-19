@@ -60,7 +60,7 @@
     "eslint-config-next": "15.1.1",
     "postcss": "^8.4.49",
     "prisma": "^6.0.0",
-    "react-email": "3.0.1",
+    "react-email": "3.0.4",
     "tailwindcss": "^3.4.16",
     "typescript": "^5.7.2"
   },
