@@ -26,7 +26,7 @@
     "@radix-ui/react-tooltip": "^1.1.4",
     "@react-email/body": "^0.0.10",
     "@react-email/button": "^0.0.17",
-    "@react-email/container": "^0.0.14",
+    "@react-email/container": "^0.0.15",
     "@react-email/head": "^0.0.11",
     "@react-email/hr": "^0.0.10",
     "@react-email/html": "^0.0.10",
