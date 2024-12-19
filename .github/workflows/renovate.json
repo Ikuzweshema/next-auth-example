@@ -1,0 +1,14 @@
+{
+  "extends": [
+    "config:base"
+  ],
+  "automerge": true,
+  "automergeType": "pr",
+  "automergeStrategy": "squash",
+  "requiredStatusChecks": null,
+  "prCreation": "immediate",
+  "updateNotScheduled": false,
+  "labels": ["dependencies"],
+  "commitMessagePrefix": "[Renovate]",
+  "platformAutomerge": true
+}
