@@ -11,7 +11,7 @@
     "emailDev": "email dev"
   },
   "dependencies": {
-    "@auth/core": "^0.35.3",
+    "@auth/core": "^0.37.0",
     "@auth/prisma-adapter": "^2.7.4",
     "@prisma/client": "^5.22.0",
     "@radix-ui/react-avatar": "^1.1.1",
