@@ -57,8 +57,8 @@ importers:
         specifier: ^0.0.10
         version: 0.0.10(react@19.0.0)
       '@react-email/button':
-        specifier: ^0.0.17
-        version: 0.0.17(react@19.0.0)
+        specifier: ^0.0.19
+        version: 0.0.19(react@19.0.0)
       '@react-email/container':
         specifier: ^0.0.14
         version: 0.0.14(react@19.0.0)
@@ -1175,8 +1175,8 @@ packages:
     peerDependencies:
       react: 19.0.0
 
-  '@react-email/button@0.0.17':
-    resolution: {integrity: sha512-ioHdsk+BpGS/PqjU6JS7tUrVy9yvbUx92Z+Cem2+MbYp55oEwQ9VHf7u4f5NoM0gdhfKSehBwRdYlHt/frEMcg==}
+  '@react-email/button@0.0.19':
+    resolution: {integrity: sha512-HYHrhyVGt7rdM/ls6FuuD6XE7fa7bjZTJqB2byn6/oGsfiEZaogY77OtoLL/mrQHjHjZiJadtAMSik9XLcm7+A==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       react: 19.0.0
@@ -3961,7 +3961,7 @@ snapshots:
     dependencies:
       react: 19.0.0
 
-  '@react-email/button@0.0.17(react@19.0.0)':
+  '@react-email/button@0.0.19(react@19.0.0)':
     dependencies:
       react: 19.0.0
 
