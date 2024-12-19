@@ -84,8 +84,8 @@ importers:
         specifier: ^0.0.14
         version: 0.0.14(react@19.0.0)
       '@react-email/text':
-        specifier: ^0.0.10
-        version: 0.0.10(react@19.0.0)
+        specifier: ^0.0.11
+        version: 0.0.11(react@19.0.0)
       '@sendgrid/mail':
         specifier: ^8.1.4
         version: 8.1.4
@@ -1230,8 +1230,8 @@ packages:
     peerDependencies:
       react: 19.0.0
 
-  '@react-email/text@0.0.10':
-    resolution: {integrity: sha512-wNAnxeEAiFs6N+SxS0y6wTJWfewEzUETuyS2aZmT00xk50VijwyFRuhm4sYSjusMyshevomFwz5jNISCxRsGWw==}
+  '@react-email/text@0.0.11':
+    resolution: {integrity: sha512-a7nl/2KLpRHOYx75YbYZpWspUbX1DFY7JIZbOv5x0QU8SvwDbJt+Hm01vG34PffFyYvHEXrc6Qnip2RTjljNjg==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       react: 19.0.0
@@ -4001,7 +4001,7 @@ snapshots:
     dependencies:
       react: 19.0.0
 
-  '@react-email/text@0.0.10(react@19.0.0)':
+  '@react-email/text@0.0.11(react@19.0.0)':
     dependencies:
       react: 19.0.0
 
