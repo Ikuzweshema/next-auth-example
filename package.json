@@ -27,7 +27,7 @@
     "@react-email/body": "^0.0.10",
     "@react-email/button": "^0.0.17",
     "@react-email/container": "^0.0.14",
-    "@react-email/head": "^0.0.11",
+    "@react-email/head": "^0.0.12",
     "@react-email/hr": "^0.0.10",
     "@react-email/html": "^0.0.10",
     "@react-email/img": "^0.0.10",
